@@ -1,182 +1,207 @@
-/* Sidebar Container - Modern Glass Effect */
-.sidebar-container {
+/* Sidebar.css - CLOSE BUTTON WORKS */
+
+/* Main sidebar container - Desktop */
+.cyber-sidebar {
   position: fixed;
-  left: 0;
   top: 0;
+  left: 0;
   height: 100vh;
-  width: 0;
-  background: linear-gradient(180deg, 
-    rgba(30, 41, 59, 0.95) 0%,
-    rgba(15, 23, 42, 0.95) 100%);
-  color: white;
-  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  background: linear-gradient(135deg, #0a0a0f 0%, #151522 100%);
+  border-right: 1px solid rgba(0, 195, 255, 0.2);
+  box-shadow: 0 0 30px rgba(0, 195, 255, 0.1);
+  transition: width 0.3s ease, transform 0.3s ease;
   z-index: 1000;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 
-    10px 0 50px rgba(0, 0, 0, 0.3),
-    inset 1px 0 0 rgba(255, 255, 255, 0.05);
   overflow: hidden;
-  opacity: 0;
-  transform: translateX(-20px);
+  display: flex;
+  flex-direction: column;
 }
 
-.sidebar-container.open {
-  width: 280px;
-  opacity: 1;
-  transform: translateX(0);
+/* Collapsed state - Desktop */
+.cyber-sidebar.collapsed {
+  width: 70px !important;
 }
 
-/* Close Button */
-.sidebar-close-btn {
-  position: absolute;
-  top: 25px;
-  right: 25px;
-  z-index: 1100;
-  cursor: pointer;
+/* Expand button in collapsed state */
+.cyber-expand-btn {
   width: 40px;
   height: 40px;
+  background: rgba(0, 195, 255, 0.1);
+  border: 1px solid rgba(0, 195, 255, 0.3);
+  border-radius: 8px;
+  color: #00c3ff;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
+  margin: 10px auto;
 }
 
-.close-btn-inner {
-  position: relative;
-  width: 36px;
-  height: 36px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.cyber-expand-btn:hover {
+  background: rgba(0, 195, 255, 0.2);
+  border-color: #00c3ff;
 }
 
-.close-btn-inner span {
-  font-size: 24px;
-  color: white;
-  transition: transform 0.3s ease;
+/* Resizer handle */
+.cyber-resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  cursor: col-resize;
+  background: transparent;
+  transition: background-color 0.2s ease;
+  z-index: 10;
 }
 
-.sidebar-close-btn:hover .close-btn-inner {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(239, 68, 68, 0.3);
-  transform: rotate(90deg);
+.cyber-resizer:hover {
+  background: #00c3ff;
 }
 
-.sidebar-close-btn:hover .close-btn-inner span {
-  transform: scale(1.2);
-}
-
-/* Mobile Overlay */
-.mobile-overlay {
+/* Resize overlay */
+.resize-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: transparent;
+  cursor: col-resize;
   z-index: 999;
-  display: none;
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-}
-/* App Container */
-.app {
-  display: flex;
-  min-height: 100vh;
 }
 
-/* Main Content */
-.content {
-  flex: 1;
-  padding: 20px;
-  transition: margin-left 0.3s;
-}
+/* ========== HAMBURGER MENU ========== */
 
-/* When sidebar is open on desktop */
-.sidebar-container.open ~ .content {
-  margin-left: 250px;
-}
-
-/* Mobile Hamburger Button */
+/* Mobile hamburger button - Hidden on desktop */
 .mobile-hamburger {
+  display: none;
   position: fixed;
   top: 15px;
   left: 15px;
-  z-index: 800;
-  background: #2c3e50;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
+  width: 44px;
+  height: 44px;
+  background: rgba(0, 195, 255, 0.1);
+  border: 1px solid rgba(0, 195, 255, 0.3);
+  border-radius: 8px;
+  color: #00c3ff;
   cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  transition: all 0.3s ease;
+}
+
+.mobile-hamburger:hover {
+  background: rgba(0, 195, 255, 0.2);
+  border-color: #00c3ff;
+}
+
+.mobile-hamburger i {
+  font-size: 1.3rem;
+}
+
+/* Close button when sidebar is open */
+.mobile-hamburger.mobile-close {
+  background: rgba(255, 50, 50, 0.1);
+  border-color: rgba(255, 50, 50, 0.3);
+  color: #ff3232;
   display: none;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .mobile-hamburger {
-    display: block;
-  }
-  
-  .content {
-    margin-left: 0 !important;
-    padding-top: 60px;
-  }
-  
-  .sidebar-container.open ~ .content {
-    margin-left: 0;
-  }
-}/* Sidebar Container - Simple and Responsive */
-.sidebar-container {
-  position: fixed;
-  left: 0;
-  top: 0;
-  height: 100vh;
-  width: 0;
-  background: #2c3e50;
-  color: white;
-  transition: all 0.3s ease;
-  z-index: 1000;
-  overflow: hidden;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+.mobile-hamburger.mobile-close:hover {
+  background: rgba(255, 50, 50, 0.2);
+  border-color: #ff3232;
+  display: none;
 }
 
-.sidebar-container.open {
-  width: 250px;
-}
-
-/* Mobile Overlay */
-.mobile-overlay {
+/* Mobile backdrop */
+.sidebar-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
   z-index: 999;
   display: none;
 }
 
-/* Responsive Design */
+/* ========== RESPONSIVE ========== */
+
+/* Desktop (default) */
+.cyber-sidebar:not(.collapsed) {
+  width: 280px;
+}
+
+/* Tablets (769px - 1024px) */
+@media (max-width: 1024px) {
+  .cyber-sidebar:not(.collapsed) {
+    width: 250px;
+  }
+  
+  .cyber-sidebar.collapsed {
+    width: 65px !important;
+  }
+}
+
+/* Mobile (under 768px) - AUTO CONVERT TO HAMBURGER */
 @media (max-width: 768px) {
-  .sidebar-container {
-    width: 250px;
+  /* Hide desktop sidebar completely */
+  .cyber-sidebar:not(.mobile-open) {
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
+    width: 280px !important;
   }
   
-  .sidebar-container.open {
+  /* Show mobile sidebar when opened */
+  .cyber-sidebar.mobile-open {
     transform: translateX(0);
-    width: 250px;
+    width: 280px !important;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
   }
   
-  .mobile-overlay {
+  /* Show hamburger button */
+  .mobile-hamburger {
+    display: flex;
+  }
+  
+  /* Show backdrop when sidebar is open */
+  .cyber-sidebar.mobile-open + .sidebar-backdrop {
     display: block;
+  }
+  
+  /* Hide desktop features on mobile */
+  .cyber-resizer,
+  .cyber-expand-btn {
+    display: none;
+  }
+}
+
+/* Small phones (under 480px) */
+@media (max-width: 480px) {
+  .cyber-sidebar.mobile-open {
+    width: 85% !important;
+  }
+  
+  .mobile-hamburger {
+    width: 40px;
+    height: 40px;
+    top: 10px;
+    left: 10px;
+  }
+}
+
+/* Extra small phones (under 360px) */
+@media (max-width: 360px) {
+  .cyber-sidebar.mobile-open {
+    width: 90% !important;
+  }
+  
+  .mobile-hamburger {
+    width: 36px;
+    height: 36px;
+    top: 8px;
+    left: 8px;
   }
 }

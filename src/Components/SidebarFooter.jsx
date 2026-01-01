@@ -1,33 +1,32 @@
-import React, { useState } from 'react';
-import '../style/SidebarFooter.css';
+import React from 'react';
+import "../style/SidebarFooter.css";
 
-const SidebarFooter = ({ isOpen }) => {
-  const [showAuthButtons, setShowAuthButtons] = useState(false);
-
+const SidebarFooter = () => {
   return (
-    <div className="sidebar-footer">
-      {/* Login Icon */}
-      <div 
-        className={`login-icon-container ${showAuthButtons ? 'active' : ''}`}
-        onClick={() => setShowAuthButtons(!showAuthButtons)}
-      >
-        <div className="login-icon">
-          <span className="icon">🔑</span>
-        </div>
-        
-        {/* Auth Buttons Dropdown */}
-        {showAuthButtons && (
-          <div className="auth-dropdown">
-            <button className="auth-btn login-btn">
-              <span className="btn-icon">👤</span>
+    <div className="cyber-footer text-center">
+      <div className="dropdown">
+        <button
+          className="cyber-btn cyber-btn-primary w-100"
+          type="button"
+        >
+          <i className="bi bi-person-circle me-2"></i>
+          <span className="btn-text">Account</span>
+        </button>
+
+        <ul className="dropdown-menu w-100">
+          <li>
+            <button className="dropdown-item">
+              <i className="bi bi-box-arrow-in-right me-2"></i>
               Login
             </button>
-            <button className="auth-btn signup-btn">
-              <span className="btn-icon">✍️</span>
+          </li>
+          <li>
+            <button className="dropdown-item">
+              <i className="bi bi-person-plus me-2"></i>
               Sign Up
             </button>
-          </div>
-        )}
+          </li>
+        </ul>
       </div>
     </div>
   );

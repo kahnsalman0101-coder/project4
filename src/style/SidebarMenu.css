@@ -1,215 +1,285 @@
-/* Sidebar Menu - Simple and Responsive */
-.sidebar-menu {
+/* SidebarMenu.css - CORRECTED */
+
+/* Main menu container */
+.cyber-menu {
   flex: 1;
-  padding: 15px 0;
   overflow-y: auto;
+  padding: 20px 0;
 }
 
-.sidebar-menu ul {
+/* Menu sections */
+.menu-section {
+  margin-bottom: 25px;
+}
+
+/* Category header */
+.cyber-category {
+  padding: 0 20px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.category-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #00c3ff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.category-line {
+  flex-grow: 1;
+  height: 1px;
+  background: linear-gradient(90deg, #00c3ff, transparent);
+}
+
+/* Menu list */
+.menu-list {
   list-style: none;
-  padding: 0 10px;
+  padding: 0;
   margin: 0;
 }
 
-.menu-item {
-  margin: 5px 0;
-}
-
-.menu-link {
+/* Menu item */
+.cyber-menu-item {
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  padding: 12px 15px;
-  color: #e0e0e0;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.2s;
+  min-height: 44px;
+}
+
+.cyber-menu-item:hover {
+  background: rgba(0, 195, 255, 0.05);
+}
+
+.cyber-menu-item.active {
+  background: rgba(0, 195, 255, 0.1);
+  border-left: 3px solid #00c3ff;
+}
+
+/* Menu item content */
+.menu-item-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   width: 100%;
 }
 
-.menu-link:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
 .menu-icon {
-  font-size: 20px;
-  margin-right: 12px;
-  width: 24px;
+  font-size: 1.1rem;
+  color: #00c3ff;
+  min-width: 24px;
   text-align: center;
 }
 
-.menu-text {
-  font-size: 14px;
-  font-weight: 500;
+.menu-label {
+  font-size: 0.9rem;
+  color: #ffffff;
   flex: 1;
+  white-space: normal;
+  word-wrap: break-word;
+  line-height: 1.3;
 }
 
-.menu-arrow {
-  font-size: 18px;
-  color: #4a6fa5;
+/* Badges */
+.menu-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  margin-left: 5px;
 }
 
-/* Active Menu Item */
-.menu-item.active .menu-link {
-  background: rgba(74, 111, 165, 0.2);
-  color: white;
-  border-left: 3px solid #4a6fa5;
+.menu-badge.new {
+  background: rgba(0, 195, 255, 0.2);
+  color: #00c3ff;
 }
 
-/* Scrollbar */
-.sidebar-menu::-webkit-scrollbar {
-  width: 4px;
+.menu-badge.hot {
+  background: rgba(255, 50, 50, 0.2);
+  color: #ff3232;
 }
 
-.sidebar-menu::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+.menu-badge.pro {
+  background: rgba(120, 0, 255, 0.2);
+  color: #a64dff;
 }
 
-.sidebar-menu::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 2px;
+/* ========== COLLAPSED STATE (DESKTOP) ========== */
+/* Only apply collapsed styles on desktop (not mobile) */
+@media (min-width: 769px) {
+  .cyber-sidebar.collapsed .menu-label,
+  .cyber-sidebar.collapsed .menu-badge,
+  .cyber-sidebar.collapsed .cyber-category {
+    display: none;
+  }
+
+  .cyber-sidebar.collapsed .cyber-menu-item {
+    padding: 15px 0;
+    justify-content: center;
+  }
+
+  .cyber-sidebar.collapsed .menu-item-content {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .cyber-sidebar.collapsed .menu-icon {
+    font-size: 1.3rem;
+  }
+
+  .cyber-sidebar.collapsed .cyber-menu-item.active {
+    border-left: none;
+    border-bottom: 3px solid #00c3ff;
+  }
 }
 
-/* Responsive Design for All Mobile Sizes */
+/* ========== RESPONSIVE FOR ALL SCREENS ========== */
 
-/* Large phones (iPhone 14 Pro Max, Samsung S22 Ultra) */
-@media (max-width: 430px) {
-  .sidebar-menu {
+/* Tablets (769px - 1024px) */
+@media (max-width: 1024px) {
+  .cyber-menu {
+    padding: 15px 0;
+  }
+  
+  .menu-section {
+    margin-bottom: 20px;
+  }
+  
+  .cyber-menu-item {
+    padding: 10px 15px;
+  }
+  
+  .menu-label {
+    font-size: 0.85rem;
+  }
+}
+
+/* Mobile (under 768px) */
+@media (max-width: 768px) {
+  .cyber-menu {
+    padding: 15px 0;
+  }
+  
+  .menu-section {
+    margin-bottom: 20px;
+  }
+  
+  .cyber-category {
+    padding: 0 15px 8px;
+  }
+  
+  .cyber-menu-item {
+    padding: 10px 15px;
+    min-height: 40px;
+  }
+  
+  .menu-label {
+    font-size: 0.85rem;
+  }
+  
+  .menu-icon {
+    font-size: 1rem;
+  }
+  
+  /* On mobile, always show text (ignore collapsed state) */
+  .cyber-sidebar .menu-label,
+  .cyber-sidebar .menu-badge,
+  .cyber-sidebar .cyber-category {
+    display: block !important;
+  }
+  
+  .cyber-sidebar .cyber-menu-item {
+    padding: 10px 15px !important;
+    justify-content: flex-start !important;
+  }
+  
+  .cyber-sidebar .menu-item-content {
+    flex-direction: row !important;
+    gap: 12px !important;
+  }
+  
+  .cyber-sidebar .cyber-menu-item.active {
+    border-left: 3px solid #00c3ff !important;
+    border-bottom: none !important;
+  }
+}
+
+/* Small phones (under 480px) */
+@media (max-width: 480px) {
+  .cyber-menu {
     padding: 12px 0;
   }
   
-  .sidebar-menu ul {
-    padding: 0 8px;
+  .menu-section {
+    margin-bottom: 18px;
   }
   
-  .menu-link {
-    padding: 10px 12px;
+  .cyber-category {
+    padding: 0 12px 6px;
   }
   
-  .menu-icon {
-    font-size: 18px;
-    margin-right: 10px;
+  .cyber-menu-item {
+    padding: 8px 12px;
+    min-height: 38px;
   }
   
-  .menu-text {
-    font-size: 13px;
-  }
-}
-
-/* Medium phones (iPhone 14, most Android phones) */
-@media (max-width: 390px) {
-  .menu-link {
-    padding: 9px 11px;
+  .menu-label {
+    font-size: 0.8rem;
   }
   
   .menu-icon {
-    font-size: 17px;
-    margin-right: 9px;
+    font-size: 0.95rem;
   }
   
-  .menu-text {
-    font-size: 12.5px;
+  .menu-badge {
+    font-size: 0.6rem;
+    padding: 1px 5px;
   }
 }
 
-/* Small phones (iPhone SE, small Android) */
-@media (max-width: 375px) {
-  .sidebar-menu {
-    padding: 10px 0;
+/* Extra small phones (under 360px) */
+@media (max-width: 360px) {
+  .cyber-category {
+    padding: 0 10px 5px;
   }
   
-  .sidebar-menu ul {
-    padding: 0 6px;
-  }
-  
-  .menu-link {
+  .cyber-menu-item {
     padding: 8px 10px;
   }
   
-  .menu-icon {
-    font-size: 16px;
-    margin-right: 8px;
-  }
-  
-  .menu-text {
-    font-size: 12px;
-  }
-}
-
-/* Extra small phones */
-@media (max-width: 320px) {
-  .sidebar-menu ul {
-    padding: 0 5px;
-  }
-  
-  .menu-link {
-    padding: 7px 9px;
+  .menu-label {
+    font-size: 0.75rem;
   }
   
   .menu-icon {
-    font-size: 15px;
-    margin-right: 7px;
+    font-size: 0.9rem;
   }
   
-  .menu-text {
-    font-size: 11px;
-  }
-  
-  .menu-arrow {
-    font-size: 16px;
+  .menu-badge {
+    font-size: 0.55rem;
+    padding: 1px 4px;
   }
 }
 
-/* Tablets (portrait) */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .sidebar-menu {
-    padding: 20px 0;
-  }
-  
-  .sidebar-menu ul {
-    padding: 0 12px;
-  }
-  
-  .menu-link {
-    padding: 14px 18px;
-  }
-  
-  .menu-icon {
-    font-size: 22px;
-    margin-right: 14px;
-  }
-  
-  .menu-text {
-    font-size: 15px;
-  }
+/* ========== SCROLLBAR STYLING ========== */
+.cyber-menu::-webkit-scrollbar {
+  width: 4px;
 }
 
-/* Landscape phones and small tablets */
-@media (max-height: 600px) {
-  .sidebar-menu {
-    padding: 10px 0;
-  }
-  
-  .menu-item {
-    margin: 3px 0;
-  }
-  
-  .menu-link {
-    padding: 8px 12px;
-  }
+.cyber-menu::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
 }
 
-/* Very small height devices */
-@media (max-height: 400px) {
-  .menu-link {
-    padding: 6px 10px;
-  }
-  
-  .menu-icon {
-    font-size: 16px;
-  }
-  
-  .menu-text {
-    font-size: 12px;
-  }
+.cyber-menu::-webkit-scrollbar-thumb {
+  background: rgba(0, 195, 255, 0.3);
+  border-radius: 2px;
+}
+
+.cyber-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 195, 255, 0.5);
 }
