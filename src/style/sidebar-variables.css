@@ -1,0 +1,108 @@
+:root {
+  /* Primary Colors */
+  --primary-color: #00c3ff;
+  --primary-color-rgb: 0, 195, 255;
+  --secondary-color: #ff3232;
+  --accent-color: #a64dff;
+  
+  /* Background Colors */
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #151522;
+  --bg-tertiary: #0f0f1a;
+  --bg-quaternary: #1a1a2a;
+  
+  /* Border Colors */
+  --border-primary: rgba(var(--primary-color-rgb), 0.2);
+  --border-secondary: #2a2a3a;
+  --border-hover: rgba(var(--primary-color-rgb), 0.3);
+  
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: #00c3ff;
+  --text-tertiary: #cccccc;
+  
+  /* State Colors */
+  --success-color: #00ff88;
+  --warning-color: #ffaa00;
+  --danger-color: #ff3232;
+  --info-color: #00c3ff;
+  
+  /* Shadows & Effects */
+  --shadow-primary: rgba(var(--primary-color-rgb), 0.1);
+  --shadow-secondary: rgba(0, 0, 0, 0.3);
+  --backdrop-blur: blur(3px);
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-xxl: 25px;
+  
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.4s ease;
+  
+  /* Z-index */
+  --z-backdrop: 999;
+  --z-sidebar: 1000;
+  --z-hamburger: 1001;
+  --z-dropdown: 1010;
+  
+  /* Sidebar Dimensions */
+  --sidebar-width-collapsed: 70px;
+  --sidebar-width-expanded: 280px;
+  --sidebar-width-tablet: 250px;
+  --sidebar-width-collapsed-tablet: 65px;
+}
+
+/* Dark Theme (default) */
+[data-theme="dark"] {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #151522;
+  --bg-tertiary: #0f0f1a;
+  --text-primary: #ffffff;
+}
+
+/* Light Theme */
+[data-theme="light"] {
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e9ecef;
+  --bg-quaternary: #dee2e6;
+  --text-primary: #212529;
+  --text-secondary: #0066cc;
+  --border-secondary: #ced4da;
+  --border-primary: rgba(0, 102, 204, 0.2);
+  --primary-color: #0066cc;
+  --primary-color-rgb: 0, 102, 204;
+}
+
+/* Cyberpunk Theme */
+[data-theme="cyberpunk"] {
+  --primary-color: #ff00ff;
+  --primary-color-rgb: 255, 0, 255;
+  --secondary-color: #00ffff;
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #1a0a2a;
+  --text-secondary: #ff00ff;
+}
+
+/* Sunset Theme */
+[data-theme="sunset"] {
+  --primary-color: #ff6b35;
+  --primary-color-rgb: 255, 107, 53;
+  --secondary-color: #ffa500;
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-tertiary: #0f3460;
+  --text-secondary: #ff6b35;
+}

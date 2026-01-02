@@ -1,4 +1,4 @@
-/* Sidebar.css - CLOSE BUTTON WORKS */
+@import './sidebar-variables.css';
 
 /* Main sidebar container - Desktop */
 .cyber-sidebar {
@@ -6,11 +6,11 @@
   top: 0;
   left: 0;
   height: 100vh;
-  background: linear-gradient(135deg, #0a0a0f 0%, #151522 100%);
-  border-right: 1px solid rgba(0, 195, 255, 0.2);
-  box-shadow: 0 0 30px rgba(0, 195, 255, 0.1);
-  transition: width 0.3s ease, transform 0.3s ease;
-  z-index: 1000;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  border-right: 1px solid var(--border-primary);
+  box-shadow: 0 0 30px var(--shadow-primary);
+  transition: width var(--transition-normal), transform var(--transition-normal);
+  z-index: var(--z-sidebar);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -18,28 +18,28 @@
 
 /* Collapsed state - Desktop */
 .cyber-sidebar.collapsed {
-  width: 70px !important;
+  width: var(--sidebar-width-collapsed) !important;
 }
 
 /* Expand button in collapsed state */
 .cyber-expand-btn {
   width: 40px;
   height: 40px;
-  background: rgba(0, 195, 255, 0.1);
-  border: 1px solid rgba(0, 195, 255, 0.3);
-  border-radius: 8px;
-  color: #00c3ff;
+  background: rgba(var(--primary-color-rgb), 0.1);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.3);
+  border-radius: var(--radius-md);
+  color: var(--primary-color);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  margin: 10px auto;
+  transition: all var(--transition-normal);
+  margin: var(--spacing-sm) auto;
 }
 
 .cyber-expand-btn:hover {
-  background: rgba(0, 195, 255, 0.2);
-  border-color: #00c3ff;
+  background: rgba(var(--primary-color-rgb), 0.2);
+  border-color: var(--primary-color);
 }
 
 /* Resizer handle */
@@ -51,12 +51,12 @@
   height: 100%;
   cursor: col-resize;
   background: transparent;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--transition-fast);
   z-index: 10;
 }
 
 .cyber-resizer:hover {
-  background: #00c3ff;
+  background: var(--primary-color);
 }
 
 /* Resize overlay */
@@ -68,7 +68,7 @@
   bottom: 0;
   background: transparent;
   cursor: col-resize;
-  z-index: 999;
+  z-index: var(--z-backdrop);
 }
 
 /* ========== HAMBURGER MENU ========== */
@@ -81,20 +81,20 @@
   left: 15px;
   width: 44px;
   height: 44px;
-  background: rgba(0, 195, 255, 0.1);
-  border: 1px solid rgba(0, 195, 255, 0.3);
-  border-radius: 8px;
-  color: #00c3ff;
+  background: rgba(var(--primary-color-rgb), 0.1);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.3);
+  border-radius: var(--radius-md);
+  color: var(--primary-color);
   cursor: pointer;
   align-items: center;
   justify-content: center;
-  z-index: 1001;
-  transition: all 0.3s ease;
+  z-index: var(--z-hamburger);
+  transition: all var(--transition-normal);
 }
 
 .mobile-hamburger:hover {
-  background: rgba(0, 195, 255, 0.2);
-  border-color: #00c3ff;
+  background: rgba(var(--primary-color-rgb), 0.2);
+  border-color: var(--primary-color);
 }
 
 .mobile-hamburger i {
@@ -105,13 +105,13 @@
 .mobile-hamburger.mobile-close {
   background: rgba(255, 50, 50, 0.1);
   border-color: rgba(255, 50, 50, 0.3);
-  color: #ff3232;
+  color: var(--secondary-color);
   display: none;
 }
 
 .mobile-hamburger.mobile-close:hover {
   background: rgba(255, 50, 50, 0.2);
-  border-color: #ff3232;
+  border-color: var(--secondary-color);
   display: none;
 }
 
@@ -123,8 +123,8 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(3px);
-  z-index: 999;
+  backdrop-filter: var(--backdrop-blur);
+  z-index: var(--z-backdrop);
   display: none;
 }
 
@@ -132,17 +132,17 @@
 
 /* Desktop (default) */
 .cyber-sidebar:not(.collapsed) {
-  width: 280px;
+  width: var(--sidebar-width-expanded);
 }
 
 /* Tablets (769px - 1024px) */
 @media (max-width: 1024px) {
   .cyber-sidebar:not(.collapsed) {
-    width: 250px;
+    width: var(--sidebar-width-tablet);
   }
   
   .cyber-sidebar.collapsed {
-    width: 65px !important;
+    width: var(--sidebar-width-collapsed-tablet) !important;
   }
 }
 
@@ -151,14 +151,14 @@
   /* Hide desktop sidebar completely */
   .cyber-sidebar:not(.mobile-open) {
     transform: translateX(-100%);
-    width: 280px !important;
+    width: var(--sidebar-width-expanded) !important;
   }
   
   /* Show mobile sidebar when opened */
   .cyber-sidebar.mobile-open {
     transform: translateX(0);
-    width: 280px !important;
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+    width: var(--sidebar-width-expanded) !important;
+    box-shadow: 4px 0 20px var(--shadow-secondary);
   }
   
   /* Show hamburger button */

@@ -1,10 +1,10 @@
-/* SidebarHeader.css */
+@import './sidebar-variables.css';
 
 /* Header container */
 .cyber-header {
-  padding: 20px 15px;
-  border-bottom: 1px solid #2a2a3a;
-  background: #0f0f1a;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  border-bottom: 1px solid var(--border-secondary);
+  background: var(--bg-tertiary);
   min-height: 70px;
   display: flex;
   align-items: center;
@@ -14,7 +14,7 @@
 .cyber-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--spacing-sm);
   width: 100%;
 }
 
@@ -25,10 +25,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #1a1a2a;
-  border: 1px solid #2a2a3a;
-  border-radius: 8px;
-  color: #00c3ff;
+  background: var(--bg-quaternary);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-md);
+  color: var(--primary-color);
   flex-shrink: 0;
 }
 
@@ -42,7 +42,7 @@
   font-family: 'Arial', sans-serif;
   font-size: 1rem;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -53,21 +53,21 @@
 .cyber-collapse-btn {
   width: 32px;
   height: 32px;
-  background: #1a1a2a;
-  border: 1px solid #2a2a3a;
-  border-radius: 6px;
-  color: #00c3ff;
+  background: var(--bg-quaternary);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-sm);
+  color: var(--primary-color);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
   flex-shrink: 0;
 }
 
 .cyber-collapse-btn:hover {
-  background: #2a2a3a;
-  border-color: #00c3ff;
+  background: var(--border-secondary);
+  border-color: var(--primary-color);
 }
 
 .cyber-collapse-btn i {
@@ -84,13 +84,13 @@
 }
 
 .cyber-sidebar.collapsed .cyber-header {
-  padding: 15px 5px;
+  padding: var(--spacing-lg) var(--spacing-xs);
   justify-content: center;
 }
 
 .cyber-sidebar.collapsed .cyber-header .d-flex {
   flex-direction: column;
-  gap: 15px;
+  gap: var(--spacing-lg);
 }
 
 .cyber-sidebar.collapsed .cyber-collapse-btn {
@@ -108,7 +108,7 @@
 /* Responsive */
 @media (max-width: 768px) {
   .cyber-header {
-    padding: 15px 10px;
+    padding: var(--spacing-lg) var(--spacing-sm);
   }
   
   .cyber-logo-icon {
@@ -123,7 +123,7 @@
 
 @media (max-width: 480px) {
   .cyber-header {
-    padding: 12px 8px;
+    padding: var(--spacing-md) var(--spacing-sm);
     min-height: 60px;
   }
   

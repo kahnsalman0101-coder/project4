@@ -1,0 +1,42 @@
+/* Main CSS import file - import all sidebar components */
+@import './sidebar-variables.css';
+@import './Sidebar.css';
+@import './SidebarHeader.css';
+@import './SidebarMenu.css';
+@import './SidebarFooter.css';
+
+/* Utility Classes */
+.hidden {
+  display: none !important;
+}
+
+.visible {
+  display: block !important;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-center {
+  text-align: center;
+}

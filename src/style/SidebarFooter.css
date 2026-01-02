@@ -1,10 +1,10 @@
-/* SidebarFooter.css */
+@import './sidebar-variables.css';
 
 /* Footer container */
 .cyber-footer {
-  padding: 15px;
-  border-top: 1px solid #2a2a3a;
-  background: #0f0f1a;
+  padding: var(--spacing-lg);
+  border-top: 1px solid var(--border-secondary);
+  background: var(--bg-tertiary);
   flex-shrink: 0;
 }
 
@@ -14,27 +14,27 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 10px 12px;
-  background: #1a1a2a;
-  border: 1px solid #2a2a3a;
-  border-radius: 8px;
-  color: #ffffff;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-quaternary);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
   min-height: 40px;
 }
 
 .cyber-btn-primary {
-  background: rgba(0, 195, 255, 0.1);
-  border-color: rgba(0, 195, 255, 0.3);
-  color: #00c3ff;
+  background: rgba(var(--primary-color-rgb), 0.1);
+  border-color: rgba(var(--primary-color-rgb), 0.3);
+  color: var(--primary-color);
 }
 
 .cyber-btn:hover {
-  background: #2a2a3a;
-  border-color: #00c3ff;
+  background: var(--border-secondary);
+  border-color: var(--primary-color);
 }
 
 /* Button text */
@@ -49,7 +49,7 @@
 /* Button icon */
 .cyber-btn i {
   font-size: 1rem;
-  margin-right: 8px;
+  margin-right: var(--spacing-sm);
   flex-shrink: 0;
 }
 
@@ -64,14 +64,14 @@
   bottom: 100%;
   left: 0;
   right: 0;
-  background: #1a1a2a;
-  border: 1px solid #2a2a3a;
-  border-radius: 8px;
-  padding: 8px 0;
-  margin-bottom: 10px;
+  background: var(--bg-quaternary);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) 0;
+  margin-bottom: var(--spacing-sm);
   display: none;
   list-style: none;
-  z-index: 100;
+  z-index: var(--z-dropdown);
 }
 
 /* Show dropdown on hover */
@@ -84,37 +84,37 @@
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 8px 12px;
+  padding: var(--spacing-sm) var(--spacing-md);
   background: transparent;
   border: none;
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 0.85rem;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background var(--transition-fast);
   min-height: 36px;
 }
 
 .dropdown-item:hover {
-  background: rgba(0, 195, 255, 0.1);
-  color: #00c3ff;
+  background: rgba(var(--primary-color-rgb), 0.1);
+  color: var(--primary-color);
 }
 
 .dropdown-item i {
   font-size: 0.85rem;
-  margin-right: 8px;
-  color: #00c3ff;
+  margin-right: var(--spacing-sm);
+  color: var(--primary-color);
   flex-shrink: 0;
 }
 
 /* ========== COLLAPSED STATE ========== */
 .cyber-sidebar.collapsed .cyber-footer {
-  padding: 15px 8px;
+  padding: var(--spacing-lg) var(--spacing-sm);
 }
 
 .cyber-sidebar.collapsed .cyber-btn {
-  padding: 10px;
+  padding: var(--spacing-sm);
   flex-direction: column;
-  gap: 5px;
+  gap: var(--spacing-xs);
 }
 
 .cyber-sidebar.collapsed .cyber-btn span {
@@ -136,7 +136,7 @@
 .cyber-sidebar.collapsed .dropdown-menu {
   width: 160px;
   position: fixed;
-  left: 70px;
+  left: var(--sidebar-width-collapsed);
   bottom: 70px;
 }
 
@@ -145,18 +145,22 @@
 /* Tablets (769px - 1024px) */
 @media (max-width: 1024px) {
   .cyber-footer {
-    padding: 12px;
+    padding: var(--spacing-md);
+  }
+  
+  .cyber-sidebar.collapsed .dropdown-menu {
+    left: var(--sidebar-width-collapsed-tablet);
   }
 }
 
 /* Mobile (under 768px) */
 @media (max-width: 768px) {
   .cyber-footer {
-    padding: 10px;
+    padding: var(--spacing-sm);
   }
   
   .cyber-btn {
-    padding: 8px 10px;
+    padding: var(--spacing-sm) var(--spacing-sm);
     font-size: 0.8rem;
   }
   
@@ -165,7 +169,7 @@
   }
   
   .cyber-sidebar.collapsed .cyber-footer {
-    padding: 10px 6px;
+    padding: var(--spacing-sm) var(--spacing-xs);
   }
   
   .cyber-sidebar.collapsed .cyber-btn span {
