@@ -109,21 +109,129 @@ const Sidebar = ({ collapsed, onToggleCollapse }) => {
     }
   };
 
+  // Menu items from SidebarMenu component
+  const menuItems = [
+    {
+      category: null,
+      items: [
+        { 
+          id: 'get-started', 
+          label: 'Get Started', 
+          icon: 'bi-rocket-takeoff-fill', 
+          badge: 'NEW',
+          type: 'simple'
+        },
+        { 
+          id: 'media', 
+          label: 'Media Library', 
+          icon: 'bi-images', 
+          badge: null,
+          type: 'parent',
+          submenu: [
+            { id: 'gallery', label: 'Image Gallery', icon: 'bi-collection' },
+            { id: 'videos', label: 'Video Library', icon: 'bi-film' },
+            { id: 'documents', label: 'Documents', icon: 'bi-file-earmark-text' }
+          ]
+        },
+        { 
+          id: 'analytics', 
+          label: 'Usage Analytics', 
+          icon: 'bi-bar-chart-line', 
+          badge: null,
+          type: 'simple'
+        },
+        { 
+          id: 'cache', 
+          label: 'Purge Cache', 
+          icon: 'bi-lightning-charge-fill', 
+          badge: 'HOT',
+          type: 'simple'
+        },
+      ]
+    },
+    {
+      category: 'CONFIGURATION',
+      items: [
+        { 
+          id: 'storage', 
+          label: 'External Storage', 
+          icon: 'bi-hdd-fill', 
+          badge: null,
+          type: 'simple'
+        },
+        { 
+          id: 'cdn', 
+          label: 'CDN Endpoints', 
+          icon: 'bi-globe2', 
+          badge: null,
+          type: 'parent',
+          submenu: [
+            { id: 'cdn-primary', label: 'Primary Edge', icon: 'bi-hdd-network' },
+            { id: 'cdn-backup', label: 'Backup Nodes', icon: 'bi-hdd-stack' }
+          ]
+        },
+        { 
+          id: 'settings', 
+          label: 'Settings', 
+          icon: 'bi-gear-fill', 
+          badge: null,
+          type: 'simple'
+        },
+      ]
+    },
+    {
+      category: 'DEVELOPER',
+      items: [
+        { 
+          id: 'performance', 
+          label: 'Performance Center', 
+          icon: 'bi-graph-up-arrow', 
+          badge: null,
+          type: 'simple'
+        },
+        { 
+          id: 'dev-options', 
+          label: 'Developer Options', 
+          icon: 'bi-code-slash', 
+          badge: null,
+          type: 'parent',
+          submenu: [
+            { id: 'api-keys', label: 'API Keys', icon: 'bi-key' },
+            { id: 'webhooks', label: 'Webhooks', icon: 'bi-link-45deg' },
+            { id: 'logs', label: 'Access Logs', icon: 'bi-journal-text' }
+          ]
+        },
+        { 
+          id: 'upgrade', 
+          label: 'Upgrade Plan', 
+          icon: 'bi-rocket-fill', 
+          badge: 'PRO',
+          type: 'simple'
+        },
+      ]
+    }
+  ];
+
+  // Get all top-level menu items (flatten the structure)
+  const allTopLevelItems = menuItems.reduce((acc, section) => {
+    return [...acc, ...section.items];
+  }, []);
+
   // If on mobile, show hamburger menu
   if (isMobile) {
     return (
       <>
-        {/* Hamburger button */}
+        {/* Mobile hamburger button */}
         <button 
-          className={`mobile-hamburger ${mobileOpen ? 'mobile-close' : ''}`}
+          className="mobile-hamburger"
           onClick={toggleMobileSidebar}
         >
-          <i className={`bi ${mobileOpen ? 'bi-x-lg' : 'bi-list'}`}></i>
+          <i className="bi bi-list"></i>
         </button>
         
         {/* Backdrop when sidebar is open */}
         {mobileOpen && (
-          <div className="sidebar-backdrop" onClick={toggleMobileSidebar} />
+          <div className="sidebar-backdrop" onClick={() => setMobileOpen(false)} />
         )}
         
         {/* Mobile sidebar */}
@@ -133,7 +241,7 @@ const Sidebar = ({ collapsed, onToggleCollapse }) => {
         >
           <SidebarHeader 
             collapsed={false} 
-            onToggleCollapse={handleCollapseButtonClick} 
+            onToggleCollapse={() => setMobileOpen(false)} 
           />
           <SidebarMenu />
           <SidebarFooter />
@@ -142,20 +250,41 @@ const Sidebar = ({ collapsed, onToggleCollapse }) => {
     );
   }
 
-  // If on desktop, show normal sidebar
+  // If on desktop and collapsed, show mini sidebar with icons from SidebarMenu
   if (collapsed) {
     return (
       <div className="cyber-sidebar collapsed">
-        <SidebarHeader collapsed={collapsed} onToggleCollapse={handleCollapseButtonClick} />
-        <div className="text-center mt-4">
-          <button className="cyber-expand-btn" onClick={handleCollapseButtonClick}>
-            <i className="bi bi-chevron-right"></i>
-          </button>
+        <SidebarHeader 
+          collapsed={collapsed} 
+          onToggleCollapse={handleCollapseButtonClick} 
+        />
+        
+        {/* Mini sidebar content with icons from SidebarMenu */}
+        <div className="mini-sidebar-content">
+          <div className="mini-menu">
+            {allTopLevelItems.map((item) => (
+              <button 
+                key={item.id}
+                className="mini-menu-item"
+                title={item.label}
+                onClick={() => {
+                  // Handle click - in a real app, this would navigate or show submenu
+                  console.log(`Clicked: ${item.label}`);
+                }}
+              >
+                <i className={`bi ${item.icon}`}></i>
+                {item.badge && (
+                  <span className="mini-badge">{item.badge}</span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     );
   }
 
+  // Desktop expanded view
   return (
     <>
       <div 
@@ -163,7 +292,10 @@ const Sidebar = ({ collapsed, onToggleCollapse }) => {
         className={`cyber-sidebar ${isResizing ? 'resizing' : ''}`}
         style={{ width: `${width}px` }}
       >
-        <SidebarHeader collapsed={collapsed} onToggleCollapse={handleCollapseButtonClick} />
+        <SidebarHeader 
+          collapsed={collapsed} 
+          onToggleCollapse={handleCollapseButtonClick} 
+        />
         <SidebarMenu />
         <SidebarFooter />
         <div 

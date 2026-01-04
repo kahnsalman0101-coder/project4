@@ -1,6 +1,5 @@
-// src/pages/RandomTextPage.jsx
 import React, { useState, useEffect } from 'react';
-import '../style\/RandomTextPage.css';
+import '../style/RandomTextPage.css';
 
 const RandomTextPage = ({ sidebarOpen = true, isMobile = false }) => {
   const [screenSize, setScreenSize] = useState('');
@@ -21,21 +20,16 @@ const RandomTextPage = ({ sidebarOpen = true, isMobile = false }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const getResponsiveClass = () => {
-    if (isMobile) return 'mobile-view';
-    if (!sidebarOpen) return 'with-sidebar sidebar-collapsed';
-    return 'with-sidebar';
-  };
-
   return (
-    <div className={`random-text-page ${getResponsiveClass()}`}>
+    <div className="random-text-page">
       <header className="page-header">
         <h1>Random Text Page</h1>
-        <p className="subtitle">Fully  Design</p>
+        <p className="subtitle">Fully Responsive Design</p>
         <p className="subtitle visible-mobile">
-          Screen: {screenSize} | {isMobile ? 'Mobile' : 'Desktop'}
+          Screen: {screenSize} | {isMobile ? 'Mobile' : 'Desktop'} | Sidebar: {sidebarOpen ? 'Open' : 'Collapsed'}
         </p>
         <p className="subtitle hidden-mobile">
+          Sidebar is {sidebarOpen ? 'open' : 'collapsed'}
         </p>
       </header>
       
@@ -80,7 +74,8 @@ const RandomTextPage = ({ sidebarOpen = true, isMobile = false }) => {
         </section>
       </main>
       
-      <footer className="page-footer">x
+      <footer className="page-footer">
+        <p>© 2024 Random Text Page | Sidebar Status: {sidebarOpen ? 'Open' : 'Collapsed'}</p>
       </footer>
     </div>
   );

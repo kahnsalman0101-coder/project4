@@ -1,15 +1,15 @@
 :root {
   /* Primary Colors */
-  --primary-color: #00c3ff;
+  --primary-color: #ffffff;
   --primary-color-rgb: 0, 195, 255;
-  --secondary-color: #ff3232;
-  --accent-color: #a64dff;
+  --secondary-color: #46433d;
+  --accent-color: #070706;
   
   /* Background Colors */
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #151522;
-  --bg-tertiary: #0f0f1a;
-  --bg-quaternary: #1a1a2a;
+  --bg-primary: #000000;
+  --bg-secondary: #ff0707;
+  --bg-tertiary: #204ae4;
+  --bg-quaternary: #004ff3;
   
   /* Border Colors */
   --border-primary: rgba(var(--primary-color-rgb), 0.2);
@@ -18,14 +18,14 @@
   
   /* Text Colors */
   --text-primary: #ffffff;
-  --text-secondary: #00c3ff;
-  --text-tertiary: #cccccc;
+  --text-secondary: #ffffff;
+  --text-tertiary: #000000;
   
   /* State Colors */
-  --success-color: #00ff88;
-  --warning-color: #ffaa00;
-  --danger-color: #ff3232;
-  --info-color: #00c3ff;
+  --success-color: #ff3700;
+  --warning-color: #00ff1a;
+  --danger-color: #32fff1;
+  --info-color: #ff0033;
   
   /* Shadows & Effects */
   --shadow-primary: rgba(var(--primary-color-rgb), 0.1);
@@ -65,10 +65,10 @@
 
 /* Dark Theme (default) */
 [data-theme="dark"] {
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #151522;
-  --bg-tertiary: #0f0f1a;
-  --text-primary: #ffffff;
+  --bg-primary: #ffffff;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #ffffff;
+  --text-primary: #000000;
 }
 
 /* Light Theme */
@@ -76,11 +76,11 @@
   --bg-primary: #f8f9fa;
   --bg-secondary: #ffffff;
   --bg-tertiary: #e9ecef;
-  --bg-quaternary: #dee2e6;
+  --bg-quaternary: #ffffff;
   --text-primary: #212529;
-  --text-secondary: #0066cc;
+  --text-secondary: #ffffff;
   --border-secondary: #ced4da;
-  --border-primary: rgba(0, 102, 204, 0.2);
+  --border-primary: rgba(255, 255, 255, 0.2);
   --primary-color: #0066cc;
   --primary-color-rgb: 0, 102, 204;
 }
@@ -89,7 +89,7 @@
 [data-theme="cyberpunk"] {
   --primary-color: #ff00ff;
   --primary-color-rgb: 255, 0, 255;
-  --secondary-color: #00ffff;
+  --secondary-color: #ffffff;
   --bg-primary: #000000;
   --bg-secondary: #0a0a0a;
   --bg-tertiary: #1a0a2a;
