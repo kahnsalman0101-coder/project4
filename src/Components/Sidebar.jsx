@@ -9,6 +9,11 @@ const Sidebar = ({ collapsed, onToggleCollapse }) => {
   const [isResizing, setIsResizing] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState({
+    media: false,
+    cdn: false,
+    devOptions: false
+  });
   
   const sidebarRef = useRef(null);
   const startXRef = useRef(0);
@@ -107,6 +112,14 @@ const Sidebar = ({ collapsed, onToggleCollapse }) => {
       // On desktop, toggle collapse state
       onToggleCollapse();
     }
+  };
+
+  // Toggle submenu expansion in collapsed view
+  const toggleCollapsedSubmenu = (menuId) => {
+    setExpandedMenus(prev => ({
+      ...prev,
+      [menuId]: !prev[menuId]
+    }));
   };
 
   // Menu items from SidebarMenu component
@@ -212,11 +225,6 @@ const Sidebar = ({ collapsed, onToggleCollapse }) => {
     }
   ];
 
-  // Get all top-level menu items (flatten the structure)
-  const allTopLevelItems = menuItems.reduce((acc, section) => {
-    return [...acc, ...section.items];
-  }, []);
-
   // If on mobile, show hamburger menu
   if (isMobile) {
     return (
@@ -250,7 +258,7 @@ const Sidebar = ({ collapsed, onToggleCollapse }) => {
     );
   }
 
-  // If on desktop and collapsed, show mini sidebar with icons from SidebarMenu
+  // If on desktop and collapsed, show mini sidebar with ONLY ICONS
   if (collapsed) {
     return (
       <div className="cyber-sidebar collapsed">
@@ -259,24 +267,66 @@ const Sidebar = ({ collapsed, onToggleCollapse }) => {
           onToggleCollapse={handleCollapseButtonClick} 
         />
         
-        {/* Mini sidebar content with icons from SidebarMenu */}
+        {/* Mini sidebar content with ONLY ICONS (no text labels) */}
         <div className="mini-sidebar-content">
           <div className="mini-menu">
-            {allTopLevelItems.map((item) => (
-              <button 
-                key={item.id}
-                className="mini-menu-item"
-                title={item.label}
-                onClick={() => {
-                  // Handle click - in a real app, this would navigate or show submenu
-                  console.log(`Clicked: ${item.label}`);
-                }}
-              >
-                <i className={`bi ${item.icon}`}></i>
-                {item.badge && (
-                  <span className="mini-badge">{item.badge}</span>
+            {menuItems.map((section, sectionIndex) => (
+              <React.Fragment key={sectionIndex}>
+                {/* Section separator for collapsed view - only shows first letter */}
+                {section.category && (
+                  <div className="mini-section-divider">
+                    <span className="mini-section-label">{section.category.charAt(0)}</span>
+                  </div>
                 )}
-              </button>
+                
+                {section.items.map((item) => {
+                  // Render parent item with ICON ONLY
+                  return (
+                    <React.Fragment key={item.id}>
+                      <button 
+                        className={`mini-menu-item ${item.type === 'parent' ? 'has-submenu' : ''} ${expandedMenus[item.id] ? 'expanded' : ''}`}
+                        title={item.label} // Tooltip text on hover
+                        onClick={() => {
+                          if (item.type === 'parent') {
+                            toggleCollapsedSubmenu(item.id);
+                          } else {
+                            console.log(`Clicked: ${item.label}`);
+                          }
+                        }}
+                      >
+                        <i className={`bi ${item.icon}`}></i>
+                        {item.badge && (
+                          <span className={`mini-badge ${item.badge.toLowerCase()}`}>{item.badge}</span>
+                        )}
+                        {item.type === 'parent' && (
+                          <i 
+                            className={`bi ${expandedMenus[item.id] ? 'bi-chevron-down' : 'bi-chevron-right'} mini-submenu-arrow`}
+                          ></i>
+                        )}
+                      </button>
+                      
+                      {/* Render submenu items if parent is expanded - ICONS ONLY */}
+                      {item.type === 'parent' && expandedMenus[item.id] && item.submenu && (
+                        <div className="mini-submenu">
+                          {item.submenu.map((subItem) => (
+                            <button 
+                              key={subItem.id}
+                              className="mini-menu-item mini-submenu-item"
+                              title={subItem.label} // Tooltip text on hover
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                console.log(`Clicked: ${subItem.label}`);
+                              }}
+                            >
+                              <i className={`bi ${subItem.icon}`}></i>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </React.Fragment>
             ))}
           </div>
         </div>

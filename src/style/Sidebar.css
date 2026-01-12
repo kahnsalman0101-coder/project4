@@ -23,7 +23,7 @@
 
 /* ========== COLLAPSED STATE ========== */
 .cyber-sidebar.collapsed {
-  width: var(--sidebar-width-collapsed) !important;
+  width: var(--sidebar-width-collapsed) !important; /* 70px */
 }
 
 /* ========== EXPAND BUTTON ========== */
@@ -68,6 +68,7 @@
   padding: var(--spacing-xs) 0;
 }
 
+/* Mini menu item - ICON ONLY, NO TEXT */
 .mini-menu-item {
   width: 44px;
   height: 44px;
@@ -82,6 +83,7 @@
   transition: all var(--transition-normal);
   position: relative;
   padding: 0;
+  margin-right: 10px;
 }
 
 .mini-menu-item:hover {
@@ -110,7 +112,19 @@
   font-weight: bold;
 }
 
-/* Tooltip for mini menu items */
+.mini-badge.pro {
+  background: var(--info-color);
+}
+
+.mini-badge.hot {
+  background: var(--danger-color);
+}
+
+.mini-badge.new {
+  background: var(--success-color);
+}
+
+/* Tooltip for mini menu items on hover */
 .mini-menu-item::after {
   content: attr(title);
   position: absolute;
@@ -141,6 +155,70 @@
   background: rgba(var(--primary-color-rgb), 0.2);
   border-color: var(--primary-color);
   color: var(--primary-color);
+}
+
+/* ========== MINI SUBMENU STYLES ========== */
+.mini-menu-item.has-submenu {
+  background: rgba(var(--primary-color-rgb), 0.05);
+}
+
+.mini-submenu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  margin: 3px 0 8px 0;
+  padding-left: 8px;
+  border-left: 1px solid rgba(var(--primary-color-rgb), 0.3);
+  width: 100%;
+}
+
+.mini-submenu-item {
+  width: 36px;
+  height: 36px;
+  background: rgba(var(--bg-secondary-rgb, 30, 41, 59), 0.7);
+  border: 1px solid var(--border-secondary);
+}
+
+.mini-submenu-item:hover {
+  background: rgba(var(--primary-color-rgb), 0.15);
+  border-color: var(--primary-color);
+}
+
+.mini-submenu-arrow {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  transition: transform var(--transition-normal);
+}
+
+.mini-menu-item.has-submenu:hover .mini-submenu-arrow {
+  color: var(--primary-color);
+}
+
+/* ========== MINI SECTION DIVIDER ========== */
+.mini-section-divider {
+  width: 40px;
+  height: 1px;
+  background: rgba(var(--text-secondary-rgb, 148, 163, 184), 0.3);
+  margin: 12px auto 8px auto;
+  position: relative;
+}
+
+.mini-section-label {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 10px;
+  padding: 0 5px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* ========== RESIZER HANDLE ========== */
@@ -177,8 +255,6 @@
 }
 
 /* ========== HAMBURGER MENU ========== */
-
-/* Mobile hamburger button - Hidden on desktop */
 .mobile-hamburger {
   display: none;
   position: fixed;
@@ -208,7 +284,6 @@
   font-size: 1.3rem;
 }
 
-/* Close button when sidebar is open */
 .mobile-hamburger.mobile-close {
   background: linear-gradient(135deg, var(--danger-color) 0%, var(--warning-color) 100%);
   border-color: rgba(var(--danger-color-rgb), 0.3);
@@ -235,8 +310,6 @@
 }
 
 /* ========== RESPONSIVE ========== */
-
-/* Tablets (769px - 1024px) */
 @media (max-width: 1024px) {
   .cyber-sidebar:not(.collapsed) {
     width: var(--sidebar-width-tablet);
@@ -254,34 +327,33 @@
   .mini-menu-item i {
     font-size: 1.1rem;
   }
+  
+  .mini-submenu-item {
+    width: 34px;
+    height: 34px;
+  }
 }
 
-/* Mobile (under 768px) - AUTO CONVERT TO HAMBURGER */
 @media (max-width: 768px) {
-  /* Hide desktop sidebar completely */
   .cyber-sidebar:not(.mobile-open) {
     transform: translateX(-100%);
     width: var(--sidebar-width-expanded) !important;
   }
   
-  /* Show mobile sidebar when opened */
   .cyber-sidebar.mobile-open {
     transform: translateX(0);
     width: var(--sidebar-width-expanded) !important;
     box-shadow: 4px 0 20px var(--shadow-secondary);
   }
   
-  /* Show hamburger button */
   .mobile-hamburger {
     display: flex;
   }
   
-  /* Show backdrop when sidebar is open */
   .cyber-sidebar.mobile-open + .sidebar-backdrop {
     display: block;
   }
   
-  /* Hide desktop features on mobile */
   .cyber-resizer,
   .cyber-expand-btn,
   .mini-sidebar-content {
@@ -289,7 +361,6 @@
   }
 }
 
-/* Small phones (under 480px) */
 @media (max-width: 480px) {
   .cyber-sidebar.mobile-open {
     width: 85% !important;
@@ -312,7 +383,6 @@
   }
 }
 
-/* Extra small phones (under 360px) */
 @media (max-width: 360px) {
   .cyber-sidebar.mobile-open {
     width: 90% !important;
@@ -354,8 +424,6 @@
 }
 
 /* ========== THEME SPECIFIC ADJUSTMENTS ========== */
-
-/* Light theme adjustments */
 [data-theme="light"] .cyber-sidebar {
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
 }
@@ -368,7 +436,10 @@
   background: rgba(var(--primary-color-rgb), 0.15);
 }
 
-/* Cyberpunk theme adjustments */
+[data-theme="light"] .mini-submenu-item {
+  background: rgba(var(--bg-secondary-rgb, 240, 240, 240), 0.7);
+}
+
 [data-theme="cyberpunk"] .cyber-sidebar {
   background: var(--bg-secondary);
   border-right: 1px solid var(--primary-color);
@@ -376,9 +447,13 @@
 
 [data-theme="cyberpunk"] .mini-menu-item:hover {
   box-shadow: 0 0 10px var(--primary-color);
+  background: rgba(var(--primary-color-rgb), 0.2);
 }
 
-/* Sunset theme adjustments */
+[data-theme="cyberpunk"] .mini-submenu {
+  border-left-color: var(--primary-color);
+}
+
 [data-theme="sunset"] .cyber-sidebar {
   background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
 }
@@ -387,4 +462,58 @@
   background: rgba(var(--primary-color-rgb), 0.2);
   border-color: var(--secondary-color);
   color: var(--secondary-color);
+}
+
+[data-theme="sunset"] .mini-submenu-item:hover {
+  border-color: var(--secondary-color);
+  color: var(--secondary-color);
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mini-submenu {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.mini-menu-item.has-submenu.expanded .mini-submenu-arrow {
+  transform: rotate(90deg);
+  color: var(--primary-color);
+}
+
+/* ========== ACCESSIBILITY ========== */
+.mini-menu-item:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.mini-menu-item:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+[data-theme="high-contrast"] .cyber-sidebar {
+  border-right: 3px solid var(--text-primary);
+}
+
+[data-theme="high-contrast"] .mini-menu-item {
+  border: 2px solid var(--text-primary);
+}
+
+[data-theme="high-contrast"] .mini-menu-item:hover {
+  background: var(--text-primary);
+  color: var(--bg-tertiary);
+}
+
+[data-theme="high-contrast"] .mini-badge {
+  border: 1px solid var(--text-primary);
 }
