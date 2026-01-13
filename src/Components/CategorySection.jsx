@@ -5,7 +5,10 @@ import {
   FiTrash2, 
   FiGrid,
   FiX,
-  FiImage
+  FiImage,
+  FiSearch,
+  FiBox,
+  FiDollarSign
 } from 'react-icons/fi';
 import CategoryForm from './CategoryForm';
 import '../style/CategorySection.css';
@@ -24,12 +27,26 @@ const CategorySection = ({
   const [editingCategory, setEditingCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleEdit = (category) => {
+  // Mock dish counts for demo
+  const categoryDishCounts = {
+    'CAT001': 8,
+    'CAT002': 12,
+    'CAT003': 6,
+    'CAT004': 10,
+    'CAT005': 15,
+    'CAT006': 9,
+    'CAT007': 11,
+    'CAT008': 7
+  };
+
+  const handleEdit = (category, e) => {
+    e.stopPropagation();
     setEditingCategory(category);
     onShowFormChange(true);
   };
 
-  const handleDelete = (categoryId) => {
+  const handleDelete = (categoryId, e) => {
+    e.stopPropagation();
     if (window.confirm('Are you sure you want to delete this category?')) {
       onDeleteCategory(categoryId);
     }
@@ -67,6 +84,11 @@ const CategorySection = ({
     onShowFormChange(false);
   };
 
+  const handleAddClick = () => {
+    setEditingCategory(null);
+    onShowFormChange(true);
+  };
+
   const filteredCategories = categories.filter(category =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (category.id && category.id.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -75,148 +97,154 @@ const CategorySection = ({
   const sortedCategories = [...filteredCategories].sort((a, b) => a.orderBy - b.orderBy);
 
   return (
-    <div className="category-section-compact glass-card">
-      <div className="section-header-compact">
+    <div className={`hotel-menu-section ${darkMode ? 'dark-mode' : ''}`}>
+      {/* Header */}
+      <div className="hotel-menu-header">
         <div className="header-left">
-          <h2 className="section-title-compact">
+          <div className="hotel-menu-title">
             <FiGrid />
-            <span>Categories Management</span>
-            <span className="section-count">{categories.length}</span>
-          </h2>
+            <span>Categories</span>
+            <span className="category-count">{categories.length}</span>
+          </div>
         </div>
         
-        <div className="section-controls-compact">
-         
+        <div className="hotel-menu-controls">
           <button 
-            className="modern-btn primary small"
-            onClick={() => {
-              setEditingCategory(null);
-              onShowFormChange(true);
-            }}
+            className="add-btn-plus" 
+            onClick={handleAddClick}
+            title="Add Category"
           >
             <FiPlus />
-            <span>Add Category</span>
           </button>
         </div>
       </div>
 
+      {/* Category Form Overlay */}
       {showForm && (
         <div className="compact-form-overlay">
-          <div className="compact-form-container">
-            <div className="compact-form-header">
-              <h3>{editingCategory ? 'Edit Category' : 'Add New Category'}</h3>
+          <div className="form-modal-compact">
+            <div className="form-header-compact">
+              <h3>{editingCategory ? 'Edit Category' : 'Add Category'}</h3>
               <button 
-                className="close-btn"
+                className="add-btn-plus"
                 onClick={handleFormCancel}
               >
                 <FiX />
               </button>
             </div>
-            <CategoryForm
-              category={editingCategory}
-              onSubmit={handleFormSubmit}
-              onCancel={handleFormCancel}
-            />
+            <div className="form-content-compact">
+              <CategoryForm
+                category={editingCategory}
+                onSubmit={handleFormSubmit}
+                onCancel={handleFormCancel}
+              />
+            </div>
           </div>
         </div>
       )}
 
-      <div className="categories-container">
+      {/* Categories Grid - 4 per row */}
+      <div className="hotel-categories-container">
         {sortedCategories.length > 0 ? (
-          <div className="categories-grid">
-            {sortedCategories.map(category => (
-              <div 
-                key={category.id}
-                className={`category-card-compact ${selectedCategoryId === category.id ? 'selected' : ''}`}
-                onClick={() => onSelectCategory(category.id)}
-              >
-                <div className="category-card-header">
+          <div className="hotel-categories-grid">
+            {sortedCategories.map(category => {
+              const dishCount = categoryDishCounts[category.id] || category.dishCount || 0;
+              const isSelected = selectedCategoryId === category.id;
+              
+              return (
+                <div 
+                  key={category.id}
+                  className={`category-tile ${isSelected ? 'selected' : ''}`}
+                  onClick={() => onSelectCategory(category.id)}
+                >
+                  {/* Color Strip */}
                   <div 
-                    className="category-color-indicator"
-                    style={{ backgroundColor: category.color }}
+                    className="category-color-strip" 
+                    style={{ backgroundColor: category.color || '#667eea' }}
                   />
+                  
+                  {/* Selection Dot */}
+                  {isSelected && (
+                    <div className="selection-dot" />
+                  )}
+                  
+                  {/* Image or Icon */}
+                  <div className="category-image-container">
+                    {category.image ? (
+                      <img 
+                        src={category.image} 
+                        alt={category.name} 
+                        className="category-image"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.parentNode.querySelector('.image-fallback').style.display = 'flex';
+                        }}
+                      />
+                    ) : (
+                      <div className="image-fallback">
+                        <FiBox size={16} />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Category Content */}
+                  <div className="category-content">
+                    <div className="category-name" title={category.name}>
+                      {category.name}
+                    </div>
+                    <div className="category-count">
+                      {dishCount} items
+                    </div>
+                  </div>
+                  
+                  {/* Hover Actions */}
                   <div className="category-actions">
                     <button 
                       className="action-btn edit-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEdit(category);
-                      }}
+                      onClick={(e) => handleEdit(category, e)}
+                      title="Edit"
                     >
                       <FiEdit2 />
                     </button>
                     <button 
                       className="action-btn delete-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(category.id);
-                      }}
+                      onClick={(e) => handleDelete(category.id, e)}
+                      title="Delete"
                     >
                       <FiTrash2 />
                     </button>
                   </div>
                 </div>
-                
-                {/* Category Image Display */}
-                {category.image ? (
-                  <div className="category-image-container">
-                    <img 
-                      src={category.image} 
-                      alt={category.name} 
-                      className="category-image"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.parentNode.querySelector('.image-fallback').style.display = 'flex';
-                      }}
-                    />
-                    <div className="image-fallback" style={{ display: 'none' }}>
-                      <FiImage />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="category-image-placeholder">
-                    <FiImage />
-                    <span>No Image</span>
-                  </div>
-                )}
-                
-                <div className="category-card-body">
-                  <h3 className="category-name">{category.name}</h3>
-                  <p className="category-id">{category.id}</p>
-                  <div className="category-meta">
-                    <span className="meta-item">
-                      Order: #{category.orderBy}
-                    </span>
-                    <span className="meta-item">
-                      Products: {category.productCount || 0}
-                    </span>
-                  </div>
+              );
+            })}
+            
+            {/* Add More Tile - Only show if there's space */}
+            {sortedCategories.length < 8 && (
+              <div 
+                className="category-tile add-more-tile"
+                onClick={handleAddClick}
+                title="Add Category"
+              >
+                <div className="add-tile-content">
+                  <FiPlus size={20} />
+                  <span>Add Category</span>
                 </div>
-                
-                {selectedCategoryId === category.id && (
-                  <div className="selection-indicator">
-                    Selected
-                  </div>
-                )}
               </div>
-            ))}
+            )}
           </div>
         ) : (
-          <div className="empty-state-compact">
+          <div className="empty-state">
             <div className="empty-icon">
               <FiGrid />
             </div>
-            <h3>No Categories Yet</h3>
-            <p>Start by creating your first category</p>
+            <h3>No Categories</h3>
+            <p>Create categories like Salads, Biryani, Pulao, etc.</p>
             <button 
-              className="modern-btn primary"
-              onClick={() => {
-                setEditingCategory(null);
-                onShowFormChange(true);
-              }}
+              className="add-first-btn"
+              onClick={handleAddClick}
             >
               <FiPlus />
-              <span>Create Category</span>
+              Add First Category
             </button>
           </div>
         )}

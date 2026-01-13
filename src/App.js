@@ -2,7 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from './Components/Sidebar';
 import CategorySection from './Components/CategorySection';
 import ProductSection from './Components/ProductSection';
-import { initialCategories, initialProducts } from './services/dataService';
+import CartTable from './Components/CartTable';
+import Calculator from './Components/Calculator';
+import TotalAmount from './Components/TotalAmount';
+import { initialCategories, initialDishes } from './services/dataService';
 import './App.css';
 
 function App() {
@@ -10,9 +13,8 @@ function App() {
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(280);
   
-  // Inventory states
   const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);
+  const [dishes, setDishes] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [totalPrice, setTotalPrice] = useState(0);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
@@ -21,15 +23,14 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   
-  // Checkout states
   const [cartItems, setCartItems] = useState([]);
-  const [selectedDiscount, setSelectedDiscount] = useState(10); // 10% default
+  const [selectedDiscount, setSelectedDiscount] = useState(10);
   const [showCheckoutPanel, setShowCheckoutPanel] = useState(true);
+  const [orderHistory, setOrderHistory] = useState([]);
   
-  // Initialize stats with default values
   const [stats, setStats] = useState({
     totalCategories: 0,
-    totalProducts: 0,
+    totalDishes: 0,
     lowStock: 0,
     outOfStock: 0,
     totalValue: 0,
@@ -37,14 +38,13 @@ function App() {
   });
   
   const [notifications, setNotifications] = useState([
-    { id: 1, message: 'Laptop stock is low (5 remaining)', type: 'warning', time: '10 min ago' },
-    { id: 2, message: 'New product "Wireless Mouse" added', type: 'info', time: '1 hour ago' },
-    { id: 3, message: 'Category "Electronics" updated', type: 'success', time: '2 hours ago' }
+    { id: 1, message: 'Greek Salad stock is low (5 remaining)', type: 'warning', time: '10 min ago' },
+    { id: 2, message: 'New dish "Chicken Biryani" added', type: 'info', time: '1 hour ago' },
+    { id: 3, message: 'Category "Salads & Starters" updated', type: 'success', time: '2 hours ago' }
   ]);
   
   const mainContentRef = useRef(null);
 
-  // Check for mobile on mount and resize
   useEffect(() => {
     const checkMobile = () => {
       const mobile = window.innerWidth <= 1024;
@@ -53,7 +53,7 @@ function App() {
       if (mobile) {
         setSidebarWidth(0);
         setSidebarCollapsed(true);
-        setShowCheckoutPanel(false); // Hide checkout panel on mobile by default
+        setShowCheckoutPanel(false);
       } else if (sidebarCollapsed) {
         setSidebarWidth(80);
       } else {
@@ -69,13 +69,11 @@ function App() {
     };
   }, [sidebarCollapsed]);
 
-  // Load initial data
   useEffect(() => {
     setCategories(initialCategories);
     
-    // Initialize products with quantity, sku, and date
-    const productsWithDetails = initialProducts.map(p => ({
-      ...p,
+    const dishesWithDetails = initialDishes.map(d => ({
+      ...d,
       quantity: Math.floor(Math.random() * 50) + 1,
       sku: `SKU${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
       lastUpdated: new Date().toISOString().split('T')[0],
@@ -84,9 +82,8 @@ function App() {
       cartQuantity: 0
     }));
     
-    setProducts(productsWithDetails);
+    setDishes(dishesWithDetails);
     
-    // Check for saved preferences
     const savedDarkMode = localStorage.getItem('darkMode');
     if (savedDarkMode !== null) {
       setDarkMode(savedDarkMode === 'true');
@@ -96,35 +93,32 @@ function App() {
     document.documentElement.style.setProperty('--primary-color', savedTheme);
   }, []);
 
-  // Calculate stats
   useEffect(() => {
-    const totalValue = products.reduce((sum, product) => 
-      sum + (product.price || 0) * (product.quantity || 0), 0
+    const totalValue = dishes.reduce((sum, dish) => 
+      sum + (dish.price || 0) * (dish.quantity || 0), 0
     );
     
-    const averagePrice = products.length > 0 
-      ? products.reduce((sum, product) => sum + (product.price || 0), 0) / products.length 
+    const averagePrice = dishes.length > 0 
+      ? dishes.reduce((sum, dish) => sum + (dish.price || 0), 0) / dishes.length 
       : 0;
     
     setStats({
       totalCategories: categories.length,
-      totalProducts: products.length,
-      lowStock: products.filter(p => p.quantity < 10 && p.quantity > 0).length,
-      outOfStock: products.filter(p => p.quantity === 0).length,
+      totalDishes: dishes.length,
+      lowStock: dishes.filter(d => d.quantity < 10 && d.quantity > 0).length,
+      outOfStock: dishes.filter(d => d.quantity === 0).length,
       totalValue: totalValue,
       averagePrice: averagePrice
     });
     
     setTotalPrice(totalValue);
-  }, [products, categories]);
+  }, [dishes, categories]);
 
-  // Update cart items when products change
   useEffect(() => {
-    const itemsInCart = products.filter(p => p.inCart && p.cartQuantity > 0);
+    const itemsInCart = dishes.filter(d => d.inCart && d.cartQuantity > 0);
     setCartItems(itemsInCart);
-  }, [products]);
+  }, [dishes]);
 
-  // Apply dark mode class to body
   useEffect(() => {
     if (darkMode) {
       document.body.classList.add('dark-mode');
@@ -135,35 +129,34 @@ function App() {
     }
   }, [darkMode]);
 
-  // Filter products
-  const getFilteredProducts = () => {
-    let filtered = products;
+  const getFilteredDishes = () => {
+    let filtered = dishes;
     
     if (selectedCategoryId) {
-      filtered = filtered.filter(product => product.categoryId === selectedCategoryId);
+      filtered = filtered.filter(dish => dish.categoryId === selectedCategoryId);
     }
     
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(product => 
-        product.name.toLowerCase().includes(query) || 
-        product.id.toLowerCase().includes(query) ||
-        product.sku?.toLowerCase().includes(query)
+      filtered = filtered.filter(dish => 
+        dish.name.toLowerCase().includes(query) || 
+        dish.id.toLowerCase().includes(query) ||
+        dish.sku?.toLowerCase().includes(query)
       );
     }
     
     switch (activeTab) {
       case 'low-stock':
-        filtered = filtered.filter(product => product.quantity < 10 && product.quantity > 0);
+        filtered = filtered.filter(dish => dish.quantity < 10 && dish.quantity > 0);
         break;
       case 'out-of-stock':
-        filtered = filtered.filter(product => product.quantity === 0);
+        filtered = filtered.filter(dish => dish.quantity === 0);
         break;
       case 'featured':
-        filtered = filtered.filter(product => product.featured);
+        filtered = filtered.filter(dish => dish.featured);
         break;
       case 'in-cart':
-        filtered = filtered.filter(product => product.inCart);
+        filtered = filtered.filter(dish => dish.inCart);
         break;
       default:
         break;
@@ -172,17 +165,15 @@ function App() {
     return filtered;
   };
 
-  // Category CRUD
   const handleAddCategory = (category) => {
     const newCategory = {
       ...category,
       id: category.id || `CAT${String(categories.length + 1).padStart(3, '0')}`,
-      productCount: 0,
+      dishCount: 0,
       createdAt: new Date().toISOString()
     };
     setCategories([...categories, newCategory]);
     
-    // Add notification
     setNotifications(prev => [{
       id: Date.now(),
       message: `Category "${category.name}" added`,
@@ -198,109 +189,104 @@ function App() {
   };
 
   const handleDeleteCategory = (categoryId) => {
-    setProducts(products.filter(product => product.categoryId !== categoryId));
+    setDishes(dishes.filter(dish => dish.categoryId !== categoryId));
     setCategories(categories.filter(cat => cat.id !== categoryId));
     if (selectedCategoryId === categoryId) {
       setSelectedCategoryId(null);
     }
   };
 
-  // Product CRUD
-  const handleAddProduct = (product) => {
-    const newProduct = {
-      ...product,
-      id: product.id || `PROD${String(products.length + 1).padStart(3, '0')}`,
-      quantity: product.quantity || 0,
-      featured: product.featured || false,
-      sku: product.sku || `SKU${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
+  const handleAddDish = (dish) => {
+    const newDish = {
+      ...dish,
+      id: dish.id || `DISH${String(dishes.length + 1).padStart(3, '0')}`,
+      quantity: dish.quantity || 0,
+      featured: dish.featured || false,
+      sku: dish.sku || `SKU${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
       lastUpdated: new Date().toISOString().split('T')[0],
       inCart: false,
       cartQuantity: 0
     };
-    setProducts([...products, newProduct]);
+    setDishes([...dishes, newDish]);
     
-    // Update category product count
-    const category = categories.find(cat => cat.id === product.categoryId);
+    const category = categories.find(cat => cat.id === dish.categoryId);
     if (category) {
       handleUpdateCategory({
         ...category,
-        productCount: (category.productCount || 0) + 1
+        dishCount: (category.dishCount || 0) + 1
       });
     }
     
-    // Add notification
     setNotifications(prev => [{
       id: Date.now(),
-      message: `Product "${product.name}" added`,
+      message: `Dish "${dish.name}" added`,
       type: 'success',
       time: 'Just now'
     }, ...prev.slice(0, 4)]);
   };
 
-  const handleUpdateProduct = (updatedProduct) => {
-    setProducts(products.map(prod => 
-      prod.id === updatedProduct.id ? updatedProduct : prod
+  const handleUpdateDish = (updatedDish) => {
+    setDishes(dishes.map(dish => 
+      dish.id === updatedDish.id ? updatedDish : dish
     ));
   };
 
-  const handleDeleteProduct = (productId) => {
-    setProducts(products.filter(prod => prod.id !== productId));
+  const handleDeleteDish = (dishId) => {
+    setDishes(dishes.filter(dish => dish.id !== dishId));
   };
 
-  // Cart Functions
-  const handleAddToCart = (productId) => {
-    setProducts(products.map(product => 
-      product.id === productId 
+  const handleAddToCart = (dish) => {
+    setDishes(dishes.map(d => 
+      d.id === dish.id 
         ? { 
-            ...product, 
+            ...d, 
             inCart: true, 
-            cartQuantity: product.cartQuantity + 1 
+            cartQuantity: d.cartQuantity + 1 
           }
-        : product
+        : d
     ));
   };
 
-  const handleRemoveFromCart = (productId) => {
-    setProducts(products.map(product => 
-      product.id === productId 
+  const handleRemoveFromCart = (dishId) => {
+    setDishes(dishes.map(dish => 
+      dish.id === dishId 
         ? { 
-            ...product, 
+            ...dish, 
             inCart: false, 
             cartQuantity: 0 
           }
-        : product
+        : dish
     ));
   };
 
-  const handleUpdateCartQuantity = (productId, quantity) => {
+  const handleUpdateCartQuantity = (dishId, quantity) => {
     if (quantity < 0) return;
     
-    const product = products.find(p => p.id === productId);
-    if (product && quantity > product.quantity) {
-      alert(`Only ${product.quantity} items available in stock`);
+    const dish = dishes.find(d => d.id === dishId);
+    if (dish && quantity > dish.quantity) {
+      alert(`Only ${dish.quantity} items available in stock`);
       return;
     }
     
-    setProducts(products.map(product => 
-      product.id === productId 
+    setDishes(dishes.map(dish => 
+      dish.id === dishId 
         ? { 
-            ...product, 
+            ...dish, 
             cartQuantity: quantity,
             inCart: quantity > 0
           }
-        : product
+        : dish
     ));
   };
 
   const handleClearCart = () => {
-    setProducts(products.map(product => ({
-      ...product,
+    setDishes(dishes.map(dish => ({
+      ...dish,
       inCart: false,
       cartQuantity: 0
     })));
   };
 
-  // Checkout Functions
   const calculateSubtotal = () => {
     return cartItems.reduce((sum, item) => 
       sum + (item.price * item.cartQuantity), 0
@@ -308,7 +294,7 @@ function App() {
   };
 
   const calculateTax = () => {
-    return calculateSubtotal() * 0.08; // 8% tax
+    return calculateSubtotal() * 0.08;
   };
 
   const calculateDiscount = () => {
@@ -328,38 +314,57 @@ function App() {
       return;
     }
     
+    // Create order record
+    const order = {
+      id: `ORD${Date.now()}`,
+      date: new Date().toLocaleDateString(),
+      time: new Date().toLocaleTimeString(),
+      items: cartItems.map(item => ({
+        name: item.name,
+        quantity: item.cartQuantity,
+        price: item.price,
+        total: item.price * item.cartQuantity
+      })),
+      subtotal: calculateSubtotal(),
+      tax: calculateTax(),
+      discount: calculateDiscount(),
+      total: calculateTotal(),
+      status: 'Completed'
+    };
+    
+    // Add to order history
+    setOrderHistory(prev => [order, ...prev]);
+    
     // Update stock after checkout
-    const updatedProducts = products.map(product => {
-      if (product.inCart && product.cartQuantity > 0) {
+    const updatedDishes = dishes.map(dish => {
+      if (dish.inCart && dish.cartQuantity > 0) {
         return {
-          ...product,
-          quantity: Math.max(0, product.quantity - product.cartQuantity),
+          ...dish,
+          quantity: Math.max(0, dish.quantity - dish.cartQuantity),
           inCart: false,
           cartQuantity: 0
         };
       }
-      return product;
+      return dish;
     });
     
-    setProducts(updatedProducts);
+    setDishes(updatedDishes);
     
-    const total = calculateTotal();
-    alert(`Checkout successful! Total: $${total.toFixed(2)}`);
+    // Clear cart
+    handleClearCart();
     
-    // Add notification
     setNotifications(prev => [{
       id: Date.now(),
-      message: `Checkout completed for ${cartItems.length} items`,
+      message: `Order #${order.id} completed successfully`,
       type: 'success',
       time: 'Just now'
     }, ...prev.slice(0, 4)]);
   };
 
-  // Export
   const handleExport = () => {
     const data = { 
       categories, 
-      products,
+      dishes,
       exportedAt: new Date().toISOString(),
       version: '1.0.0'
     };
@@ -367,38 +372,29 @@ function App() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `inventory-export-${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `hotel-menu-export-${new Date().toISOString().split('T')[0]}.json`;
     link.click();
   };
 
-  // Theme
   const changeThemeColor = (color) => {
     document.documentElement.style.setProperty('--primary-color', color);
     localStorage.setItem('themeColor', color);
   };
 
-  // Clear All
   const handleClearAll = () => {
     if (window.confirm('Are you sure you want to clear all data?')) {
       setCategories([]);
-      setProducts([]);
+      setDishes([]);
       setSelectedCategoryId(null);
       setCartItems([]);
+      setOrderHistory([]);
     }
   };
 
-  // Toggle checkout panel
   const toggleCheckoutPanel = () => {
     setShowCheckoutPanel(!showCheckoutPanel);
   };
 
-  // Get selected category name
-  const getSelectedCategoryName = () => {
-    const category = categories.find(cat => cat.id === selectedCategoryId);
-    return category ? category.name : 'All Categories';
-  };
-
-  // Clear notification
   const handleClearNotification = (id) => {
     setNotifications(notifications.filter(notif => notif.id !== id));
   };
@@ -436,34 +432,27 @@ function App() {
         </div>
         
         <div className="inventory-container">
-          {/* Main Layout Grid */}
           <div className="main-layout-grid">
-            {/* Left Column: Products and Categories */}
+            {/* Left Column */}
             <div className="left-column">
-              {/* Products Section - TOP */}
-              <div className="products-top-section">
+              {/* Product Section - 60% height */}
+              <div className="products-section" style={{ height: '60vh' }}>
                 <ProductSection
-                  products={getFilteredProducts()}
+                  products={getFilteredDishes()}
                   selectedCategory={categories.find(cat => cat.id === selectedCategoryId)}
                   showForm={showProductForm}
                   selectedCategoryId={selectedCategoryId}
-                  onAddProduct={handleAddProduct}
-                  onUpdateProduct={handleUpdateProduct}
-                  onDeleteProduct={handleDeleteProduct}
+                  onAddProduct={handleAddDish}
+                  onUpdateProduct={handleUpdateDish}
+                  onDeleteProduct={handleDeleteDish}
                   onAddToCart={handleAddToCart}
-                  onRemoveFromCart={handleRemoveFromCart}
-                  onUpdateCartQuantity={handleUpdateCartQuantity}
                   onShowFormChange={setShowProductForm}
                   darkMode={darkMode}
-                  activeTab={activeTab}
-                  onTabChange={setActiveTab}
-                  searchQuery={searchQuery}
-                  onSearchChange={setSearchQuery}
                 />
               </div>
               
-              {/* Categories Section - BELOW Products */}
-              <div className="categories-bottom-section">
+              {/* Category Section - 40% height */}
+              <div className="categories-section" style={{ height: '40vh' }}>
                 <CategorySection
                   categories={categories}
                   selectedCategoryId={selectedCategoryId}
@@ -478,10 +467,44 @@ function App() {
               </div>
             </div>
             
-            
+            {/* Right Column */}
+            <div className="right-column">
+              {/* Cart Table - 15% height */}
+              <div className="cart-table-section" style={{ height: '15vh' }}>
+                <CartTable
+                  cartItems={cartItems}
+                  onRemoveFromCart={handleRemoveFromCart}
+                  onUpdateQuantity={handleUpdateCartQuantity}
+                />
+              </div>
+              
+              {/* Calculator - 7% height */}
+              <div className="calculator-section" style={{ height: '7vh' }}>
+                <Calculator
+                  onCalculate={(result) => {
+                    // Handle calculation result if needed
+                  }}
+                  onClear={handleClearCart}
+                />
+              </div>
+              
+              {/* Total Amount - Remaining height */}
+              <div className="total-section" style={{ height: '78vh' }}>
+                <TotalAmount
+                  cartItems={cartItems}
+                  subtotal={calculateSubtotal()}
+                  tax={calculateTax()}
+                  discount={calculateDiscount()}
+                  total={calculateTotal()}
+                  selectedDiscount={selectedDiscount}
+                  onDiscountChange={setSelectedDiscount}
+                  onCheckout={handleCheckout}
+                  orderHistory={orderHistory}
+                />
+              </div>
+            </div>
           </div>
           
-          {/* Floating Action Button for Mobile */}
           {isMobile && (
             <button 
               className="mobile-checkout-toggle"
@@ -491,8 +514,6 @@ function App() {
               <span className="cart-count">{cartItems.length}</span>
             </button>
           )}
-          
-         
         </div>
       </div>
     </div>

@@ -1,0 +1,115 @@
+/* Calculator Section */
+.calculator-section {
+  height: 7vh;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  overflow: hidden;
+}
+
+/* Calculator Display */
+.calculator-display {
+  flex: 1;
+  padding: 12px 16px;
+  background: #1e293b;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 200px;
+}
+
+.display-value {
+  font-size: 24px;
+  font-weight: 600;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.display-operation {
+  font-size: 12px;
+  color: #94a3b8;
+  text-align: right;
+  margin-top: 4px;
+  min-height: 16px;
+}
+
+/* Calculator Buttons */
+.calculator-buttons {
+  display: flex;
+  flex-direction: column;
+  flex: 2;
+}
+
+.button-row {
+  display: flex;
+  flex: 1;
+}
+
+.calc-btn {
+  flex: 1;
+  border: none;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calc-btn:last-child {
+  border-right: none;
+}
+
+.button-row:last-child .calc-btn {
+  border-bottom: none;
+}
+
+.calc-btn.number {
+  color: #1e293b;
+}
+
+.calc-btn.number:hover {
+  background: #f1f5f9;
+}
+
+.calc-btn.zero {
+  flex: 2;
+}
+
+.calc-btn.operator {
+  background: #f8fafc;
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.calc-btn.operator:hover {
+  background: #e0e7ff;
+}
+
+.calc-btn.equals {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  font-weight: 600;
+}
+
+.calc-btn.equals:hover {
+  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+}
+
+.calc-btn svg {
+  font-size: 14px;
+}
+
+/* Remove default button focus outline */
+.calc-btn:focus {
+  outline: none;
+}

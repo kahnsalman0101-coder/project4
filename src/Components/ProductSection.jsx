@@ -1,17 +1,16 @@
-// Ultra-compact ProductSection.js with 70% max width - Simplified
 import React, { useState } from 'react';
 import { 
   FiPlus, 
-  FiEdit2, 
-  FiTrash2,
   FiBox,
-  FiGrid,
-  FiList,
+  FiEdit2,
+  FiTrash2,
+  FiShoppingCart,
   FiImage,
-  FiDollarSign,
-  FiMoreVertical,
-  FiArrowUp,
-  FiArrowDown
+  FiSearch,
+  FiFilter,
+  FiStar,
+  FiGrid,
+  FiList
 } from 'react-icons/fi';
 import ProductForm from './ProductForm';
 import '../style/ProductSection.css';
@@ -24,27 +23,17 @@ const ProductSection = ({
   onAddProduct,
   onUpdateProduct,
   onDeleteProduct,
+  onAddToCart,
   onShowFormChange,
   darkMode,
-  activeTab,
-  searchQuery,
+  searchQuery = '',
   onSearchChange,
-  onReorderProduct
+  activeTab = 'all',
+  onTabChange
 }) => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
-  const [expandedProduct, setExpandedProduct] = useState(null);
-
-  const handleEdit = (product) => {
-    setEditingProduct(product);
-    onShowFormChange(true);
-  };
-
-  const handleDelete = (productId) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      onDeleteProduct(productId);
-    }
-  };
+  const [sortBy, setSortBy] = useState('name');
 
   const handleAddClick = () => {
     if (!selectedCategoryId) {
@@ -55,74 +44,153 @@ const ProductSection = ({
     onShowFormChange(true);
   };
 
-  const handleMoveUp = (product) => {
-    onReorderProduct(product.id, 'up');
+  const handleAddToCartClick = (product, e) => {
+    e.stopPropagation();
+    if (onAddToCart) {
+      onAddToCart(product);
+    }
   };
 
-  const handleMoveDown = (product) => {
-    onReorderProduct(product.id, 'down');
+  const handleEditClick = (product, e) => {
+    e.stopPropagation();
+    setEditingProduct(product);
+    onShowFormChange(true);
   };
 
-  const toggleExpand = (productId) => {
-    setExpandedProduct(expandedProduct === productId ? null : productId);
+  const handleDeleteClick = (product, e) => {
+    e.stopPropagation();
+    if (window.confirm(`Delete ${product.name}?`)) {
+      onDeleteProduct(product.id);
+    }
   };
 
-  const sortedProducts = [...products].sort((a, b) => a.orderBy - b.orderBy);
+  const getSortedProducts = () => {
+    return [...products].sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'price-low':
+          return a.price - b.price;
+        case 'price-high':
+          return b.price - a.price;
+        case 'quantity':
+          return b.quantity - a.quantity;
+        default:
+          return 0;
+      }
+    });
+  };
+
+  const sortedProducts = getSortedProducts();
 
   return (
-    <div className="product-section-ultra-compact">
-      <div className="section-header-ultra-compact">
-        <div className="header-left">
-          <h2 className="section-title-ultra-compact">
-            <FiBox className="section-icon" />
-            <span>Products</span>
-            <span className="section-count">{products.length}</span>
-          </h2>
-          
-          {selectedCategory && (
-            <div className="selected-category-badge-ultra">
-              <span className="badge-label-ultra">
-                Category:
-              </span>
-              <span className="badge-value-ultra">{selectedCategory.name}</span>
-            </div>
-          )}
-        </div>
-        
-        <div className="section-controls-ultra-compact">
-          <div className="view-toggle-container">
-            <button 
-              className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
-              onClick={() => setViewMode('grid')}
-              title="Grid View"
-            >
-              <FiGrid />
-            </button>
-            <button 
-              className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
-              onClick={() => setViewMode('table')}
-              title="Table View"
-            >
-              <FiList />
-            </button>
+    <div className="product-section-main">
+      {/* Header with Controls */}
+      <div className="product-section-header">
+        <div className="header-top">
+          <div className="header-left">
+            <h2 className="section-title">
+              <FiBox />
+              <span>Menu Items</span>
+              <span className="count-badge">{products.length}</span>
+            </h2>
+            {selectedCategory && (
+              <div className="category-badge">
+                <span className="category-name">{selectedCategory.name}</span>
+              </div>
+            )}
           </div>
           
-       <button 
-  className="add-btn-ultra" 
-  onClick={handleAddClick}
-  disabled={!selectedCategoryId}
-  title={selectedCategoryId ? "Add Product" : "Select a category first"}
->
-  <FiPlus />
-  <span className="btn-text">Add Product</span>
-</button>
+          <div className="header-right">
+            <div className="view-toggle">
+              <button 
+                className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                onClick={() => setViewMode('grid')}
+                title="Grid View"
+              >
+                <FiGrid />
+              </button>
+              <button 
+                className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
+                onClick={() => setViewMode('list')}
+                title="List View"
+              >
+                <FiList />
+              </button>
+            </div>
+            
+            <button 
+              className="add-btn"
+              onClick={handleAddClick}
+              disabled={!selectedCategoryId}
+            >
+              <FiPlus />
+              <span>Add Dish</span>
+            </button>
+          </div>
+        </div>
 
+        {/* Search and Filter Bar */}
+        <div className="header-bottom">
+          <div className="search-container">
+            <FiSearch className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search dishes..."
+              value={searchQuery}
+              onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
+              className="search-input"
+            />
+          </div>
+          
+          <div className="filter-container">
+            <select 
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="sort-select"
+            >
+              <option value="name">Sort by Name</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="quantity">Stock Quantity</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Quick Tabs */}
+        <div className="quick-tabs">
+          <button 
+            className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`}
+            onClick={() => onTabChange && onTabChange('all')}
+          >
+            All Items
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'featured' ? 'active' : ''}`}
+            onClick={() => onTabChange && onTabChange('featured')}
+          >
+            <FiStar />
+            Featured
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'low-stock' ? 'active' : ''}`}
+            onClick={() => onTabChange && onTabChange('low-stock')}
+          >
+            Low Stock
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'in-cart' ? 'active' : ''}`}
+            onClick={() => onTabChange && onTabChange('in-cart')}
+          >
+            In Cart
+          </button>
         </div>
       </div>
 
+      {/* Product Form Modal */}
       {showForm && (
-        <div className="form-overlay-ultra">
-          <div className="form-modal-ultra">
+        <div className="form-overlay">
+          <div className="form-modal">
             <ProductForm
               product={editingProduct}
               selectedCategoryId={selectedCategoryId}
@@ -132,116 +200,197 @@ const ProductSection = ({
                 } else {
                   onAddProduct(data);
                 }
+                setEditingProduct(null);
                 onShowFormChange(false);
               }}
-              onCancel={() => onShowFormChange(false)}
+              onCancel={() => {
+                setEditingProduct(null);
+                onShowFormChange(false);
+              }}
             />
           </div>
         </div>
       )}
 
-      <div className={`products-container-ultra ${viewMode}`}>
+      {/* Products Grid/List */}
+      <div className="products-grid-container">
         {products.length > 0 ? (
-          viewMode === 'table' ? (
-            <div className="ultra-table-wrapper">
-              <table className="ultra-compact-table">
-                <thead>
-                  <tr>
-                    <th className="col-image">Image</th>
-                    <th className="col-name">Product Name</th>
-                    <th className="col-price">Price</th>
-                    <th className="col-actions">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedProducts.map((product, index) => (
-                    <tr 
-                      key={product.id} 
-                      className={`
-                        ${expandedProduct === product.id ? 'expanded' : ''}
-                        ${index % 2 === 0 ? 'even' : 'odd'}
-                      `}
-                    >
-                      <td className="td-image">
-                        <div className="product-image-ultra">
-                          {product.image ? (
-                            <img src={product.image} alt={product.name} />
-                          ) : (
-                            <div className="image-placeholder-ultra">
-                              <FiImage />
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="td-name">
-                        <div className="product-name-ultra">
-                          <div className="name-text">{product.name}</div>
-                        </div>
-                      </td>
-                      <td className="td-price">
-                        <div className="price-display">
-                          <span className="currency">$</span>
-                          <span className="amount">{product.price.toFixed(2)}</span>
-                        </div>
-                      </td>
-                      <td className="td-actions">
-                        <div className="table-actions-ultra">
-                          <button 
-                            className="table-btn edit-btn"
-                            onClick={() => handleEdit(product)}
-                            title="Edit Product"
-                          >
-                           
-                            <FiMoreVertical />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="ultra-products-grid">
+          viewMode === 'grid' ? (
+            <div className="products-grid">
               {sortedProducts.map(product => (
                 <div 
                   key={product.id} 
-                  className={`ultra-product-card ${expandedProduct === product.id ? 'expanded' : ''}`}
+                  className={`product-card ${product.inCart ? 'in-cart' : ''}`}
                 >
                   {/* Product Image */}
-                  <div className="ultra-card-image">
+                  <div className="product-image-container">
                     {product.image ? (
-                      <img src={product.image} alt={product.name} />
-                    ) : (
-                      <div className="ultra-image-placeholder">
-                        <FiImage size={32} />
+                      <img 
+                        src={product.image} 
+                        alt={product.name} 
+                        className="product-image"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.style.display = 'none';
+                          e.target.nextElementSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div className="image-placeholder">
+                      <FiImage />
+                    </div>
+                    
+                    {/* Product Badges */}
+                    <div className="product-badges">
+                      {product.featured && (
+                        <div className="badge featured">
+                          <FiStar />
+                          Featured
+                        </div>
+                      )}
+                      <div className="badge price">
+                        ${product.price.toFixed(2)}
+                      </div>
+                      {product.quantity < 10 && (
+                        <div className="badge low-stock">
+                          {product.quantity} left
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Quick Actions */}
+                    <div className="quick-actions">
+                      <button 
+                        className="action-btn cart-btn"
+                        onClick={(e) => handleAddToCartClick(product, e)}
+                        title="Add to Cart"
+                      >
+                        <FiShoppingCart />
+                      </button>
+                      <button 
+                        className="action-btn edit-btn"
+                        onClick={(e) => handleEditClick(product, e)}
+                        title="Edit"
+                      >
+                        <FiEdit2 />
+                      </button>
+                      <button 
+                        className="action-btn delete-btn"
+                        onClick={(e) => handleDeleteClick(product, e)}
+                        title="Delete"
+                      >
+                        <FiTrash2 />
+                      </button>
+                    </div>
+
+                    {/* Cart Quantity Indicator */}
+                    {product.cartQuantity > 0 && (
+                      <div className="cart-indicator">
+                        {product.cartQuantity} in cart
                       </div>
                     )}
-                    
-                    {/* Price Badge on Image */}
-                    <div className="price-badge-overlay">
-                      <FiDollarSign size={12} />
-                      <span>{product.price.toFixed(2)}</span>
-                    </div>
-                    
-                    
                   </div>
-                  
-                  {/* Product Name */}
-                  <div className="ultra-card-content">
-                    <h4 className="ultra-product-name">{product.name}</h4>
-                    
-                    {/* Reorder Controls */}
-                    <div className="reorder-controls">
-                     
-                        
-                     
+
+                  {/* Product Info */}
+                  <div className="product-info">
+                    <h3 className="product-name" title={product.name}>
+                      {product.name}
+                    </h3>
+                    <p className="product-description" title={product.description}>
+                      {product.description}
+                    </p>
+                    <div className="product-meta">
+                      <div className="meta-item">
+                        <span className="meta-label">SKU:</span>
+                        <span className="meta-value">{product.sku}</span>
+                      </div>
+                      <div className="meta-item">
+                        <span className="meta-label">Stock:</span>
+                        <span className={`meta-value ${product.quantity < 10 ? 'low' : 'normal'}`}>
+                          {product.quantity}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="products-list">
+              {sortedProducts.map(product => (
+                <div 
+                  key={product.id} 
+                  className={`product-list-item ${product.inCart ? 'in-cart' : ''}`}
+                >
+                  <div className="list-item-left">
+                    <div className="list-image">
+                      {product.image ? (
+                        <img 
+                          src={product.image} 
+                          alt={product.name}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.style.display = 'none';
+                            e.target.nextElementSibling.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <div className="list-placeholder">
+                        <FiImage />
+                      </div>
                     </div>
                     
-                    {/* Quick Price Display */}
-                    <div className="quick-price-display">
-                      <FiDollarSign size={14} />
-                      <span className="price-value">{product.price.toFixed(2)}</span>
+                    <div className="list-info">
+                      <div className="list-header">
+                        <h3 className="product-name">{product.name}</h3>
+                        {product.featured && (
+                          <span className="featured-badge">
+                            <FiStar /> Featured
+                          </span>
+                        )}
+                      </div>
+                      <p className="product-description">{product.description}</p>
+                      <div className="list-meta">
+                        <span className="meta-item">SKU: {product.sku}</span>
+                        <span className="meta-item">Stock: {product.quantity}</span>
+                        <span className="meta-item">Category: {selectedCategory?.name || 'N/A'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="list-item-right">
+                    <div className="price-section">
+                      <div className="price-amount">${product.price.toFixed(2)}</div>
+                      {product.cartQuantity > 0 && (
+                        <div className="cart-quantity">
+                          {product.cartQuantity} in cart
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="list-actions">
+                      <button 
+                        className="action-btn cart-btn"
+                        onClick={(e) => handleAddToCartClick(product, e)}
+                        title="Add to Cart"
+                      >
+                        <FiShoppingCart />
+                        Add to Cart
+                      </button>
+                      <button 
+                        className="action-btn edit-btn"
+                        onClick={(e) => handleEditClick(product, e)}
+                        title="Edit"
+                      >
+                        <FiEdit2 />
+                      </button>
+                      <button 
+                        className="action-btn delete-btn"
+                        onClick={(e) => handleDeleteClick(product, e)}
+                        title="Delete"
+                      >
+                        <FiTrash2 />
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -249,30 +398,54 @@ const ProductSection = ({
             </div>
           )
         ) : (
-          <div className="ultra-empty-state">
-            <div className="empty-icon-ultra">
+          <div className="empty-state">
+            <div className="empty-icon">
               <FiBox size={48} />
             </div>
-            {selectedCategoryId ? (
-              <>
-                <h3>No Products Found</h3>
-                <p>Start by adding your first product to this category</p>
-                <button 
-                  className="ultra-add-btn"
-                  onClick={handleAddClick}
-                >
-                  <FiPlus />
-                  <span>Add First Product</span>
-                </button>
-              </>
-            ) : (
-              <>
-                <h3>Select a Category</h3>
-                <p>Choose a category from the sidebar to view or add products</p>
-              </>
+            <h3>No Menu Items Found</h3>
+            <p>
+              {selectedCategoryId 
+                ? `No dishes in "${selectedCategory?.name}" category`
+                : 'Select a category to add dishes'
+              }
+            </p>
+            {selectedCategoryId && (
+              <button 
+                className="add-first-btn"
+                onClick={handleAddClick}
+              >
+                <FiPlus />
+                Add First Dish
+              </button>
             )}
           </div>
         )}
+      </div>
+
+      {/* Footer Stats */}
+      <div className="footer-stats">
+        <div className="stat-item">
+          <span className="stat-label">Total Items:</span>
+          <span className="stat-value">{products.length}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-label">In Cart:</span>
+          <span className="stat-value">
+            {products.filter(p => p.inCart).length}
+          </span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-label">Low Stock:</span>
+          <span className="stat-value low">
+            {products.filter(p => p.quantity < 10).length}
+          </span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-label">Featured:</span>
+          <span className="stat-value">
+            {products.filter(p => p.featured).length}
+          </span>
+        </div>
       </div>
     </div>
   );
