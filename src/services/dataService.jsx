@@ -1,14 +1,14 @@
 // src/services/dataService.js
-import img from "../Asset/download (3).jfif";
+import img from "../Asset/download.jfif";
 import img1 from "../Asset/download (1).jfif";
 import img2 from "../Asset/download (2).jfif";
-import img3 from "../Asset/download (4).jfif";
-import img4 from "../Asset/download (5).jfif";
-import img5 from "../Asset/download (6).jfif";
-import img6 from "../Asset/download (7).jfif";
-import img7 from "../Asset/download (8).jfif";
-import img8 from "../Asset/download (9).jfif";
-import img9 from "../Asset/download (10).jfif";
+import img3 from "../Asset/download (3).jfif";
+import img4 from "../Asset/download (4).jfif";
+import img5 from "../Asset/download (5).jfif";
+import img6 from "../Asset/download (6).jfif";
+import img7 from "../Asset/download (7).jfif";
+import img8 from "../Asset/download (8).jfif";
+import img9 from "../Asset/download (9).jfif";
 
 export const initialCategories = [
   { 
@@ -185,7 +185,7 @@ export const initialDishes = [
     id: "DISH010", 
     categoryId: "CAT002", 
     name: "Egg Biryani", 
-    image: img9, 
+    image: img8, 
     price: 13.99, 
     orderBy: 4,
     description: "Rice with boiled eggs and spices",
