@@ -26,74 +26,96 @@ const CartTable = ({ cartItems, onRemoveFromCart, onUpdateQuantity }) => {
   return (
     <div className="cart-table-section">
       <div className="cart-table-header">
-        <h3 className="cart-title">
-          <span>Order Cart</span>
-          <span className="cart-count">{cartItems.length} items</span>
-        </h3>
+        <div className="cart-summary-badge">
+        </div>
       </div>
 
       <div className="cart-table-container">
         {cartItems.length > 0 ? (
-          <div className="cart-items-list">
-            {cartItems.map((item) => (
-              <div key={item.id} className="cart-item-row">
-                <div className="cart-item-info">
-                  <span className="item-name" title={item.name}>
-                    {item.name}
-                  </span>
-                  <span className="item-price">
-                    ${item.price.toFixed(2)}
-                  </span>
-                </div>
-                
-                <div className="cart-item-controls">
-                  <div className="quantity-control">
+          <div className="cart-table-wrapper">
+            {/* Table Header */}
+            <div className="table-header-row">
+              <div className="table-col description">Description</div>
+              <div className="table-col qty">Qty</div>
+              <div className="table-col price">Price</div>
+              <div className="table-col total">Total</div>
+              <div className="table-col actions"></div>
+            </div>
+
+            {/* Table Body */}
+            <div className="cart-table-body">
+              {cartItems.map((item, index) => (
+                <div key={`${item.id}-${index}`} className="table-row">
+                  {/* Description Column */}
+                  <div className="table-col description">
+                    <div className="item-description">
+                      <div className="item-name">{item.name}</div>
+                      {item.description && (
+                        <div className="item-desc">{item.description}</div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Quantity Column */}
+                  <div className="table-col qty">
+                    <div className="quantity-control">
+                      <button 
+                        className="qty-btn minus"
+                        onClick={() => handleDecrease(item)}
+                        disabled={item.cartQuantity <= 1}
+                      >
+                        <FiMinus />
+                      </button>
+                      <span className="quantity">{item.cartQuantity}</span>
+                      <button 
+                        className="qty-btn plus"
+                        onClick={() => handleIncrease(item)}
+                      >
+                        <FiPlus />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Price Column */}
+                  <div className="table-col price">
+                    <div className="price-amount">
+                      ${item.price.toFixed(2)}
+                    </div>
+                  </div>
+
+                  {/* Total Column */}
+                  <div className="table-col total">
+                    <div className="total-amount">
+                      ${calculateItemTotal(item)}
+                    </div>
+                  </div>
+
+                  {/* Actions Column */}
+                  <div className="table-col actions">
                     <button 
-                      className="qty-btn minus"
-                      onClick={() => handleDecrease(item)}
-                      disabled={item.cartQuantity <= 1}
+                      className="remove-btn"
+                      onClick={() => onRemoveFromCart(item.id)}
+                      title="Remove item"
                     >
-                      <FiMinus />
-                    </button>
-                    <span className="quantity">{item.cartQuantity}</span>
-                    <button 
-                      className="qty-btn plus"
-                      onClick={() => handleIncrease(item)}
-                    >
-                      <FiPlus />
+                      <FiTrash2 />
                     </button>
                   </div>
-                  
-                  <span className="item-total">
-                    ${calculateItemTotal(item)}
-                  </span>
-                  
-                  <button 
-                    className="remove-btn"
-                    onClick={() => onRemoveFromCart(item.id)}
-                    title="Remove"
-                  >
-                    <FiTrash2 />
-                  </button>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+          
           </div>
         ) : (
           <div className="empty-cart">
-            <p>Cart is empty. Add items from menu.</p>
+            <div className="empty-state">
+              <div className="empty-icon">🛒</div>
+              <h4>Your cart is empty</h4>
+              <p>Add items from the menu to get started</p>
+            </div>
           </div>
         )}
       </div>
-
-      {cartItems.length > 0 && (
-        <div className="cart-summary">
-          <div className="summary-row">
-            <span>Subtotal:</span>
-            <span className="subtotal">${calculateSubtotal()}</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

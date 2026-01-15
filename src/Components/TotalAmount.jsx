@@ -98,30 +98,6 @@ const TotalAmount = ({
           <span>Process Checkout</span>
         </button>
       </div>
-
-      <div className="order-history">
-        <h4 className="history-title">Recent Orders</h4>
-        {orderHistory.length > 0 ? (
-          <div className="history-list">
-            {orderHistory.slice(0, 5).map(order => (
-              <div key={order.id} className="history-item">
-                <div className="history-item-header">
-                  <span className="order-id">#{order.id}</span>
-                  <span className="order-time">{order.date} {order.time}</span>
-                </div>
-                <div className="history-item-details">
-                  <span>{order.items.length} items</span>
-                  <span className="order-total">${order.total.toFixed(2)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="no-history">
-            <p>No recent orders</p>
-          </div>
-        )}
-      </div>
     </div>
   );
 };

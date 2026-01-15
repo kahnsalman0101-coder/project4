@@ -25,7 +25,6 @@ const CategorySection = ({
 
   return (
     <div className={`hotel-menu-section ${darkMode ? 'dark-mode' : ''}`}>
-      {/* Just show the categories grid - no header, no controls */}
       <div className="hotel-categories-container">
         {categories.length > 0 ? (
           <div className="hotel-categories-grid">
@@ -39,7 +38,7 @@ const CategorySection = ({
                   className={`category-tile ${isSelected ? 'selected' : ''}`}
                   onClick={() => onSelectCategory(category.id)}
                 >
-                  {/* Color Strip */}
+                  {/* Color Strip at Top */}
                   <div 
                     className="category-color-strip" 
                     style={{ backgroundColor: category.color || '#667eea' }}
@@ -50,19 +49,12 @@ const CategorySection = ({
                     <div className="selection-dot" />
                   )}
                   
-                  {/* Image or Icon */}
-                  <div className="category-image-container">
-                    {category.image ? (
-                      <img 
-                        src={category.image} 
-                        alt={category.name} 
-                        className="category-image"
-                      />
-                    ) : (
-                      <div className="image-fallback">
-                        <FiBox size={16} />
-                      </div>
-                    )}
+                  {/* Color Circle - Replacing Image */}
+                  <div className="category-color-circle-container">
+                    <div 
+                      className="category-color-circle"
+                      style={{ backgroundColor: category.color || '#667eea' }}
+                    />
                   </div>
                   
                   {/* Category Content */}

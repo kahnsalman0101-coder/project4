@@ -71,6 +71,7 @@ html, body, #root {
 .dark-mode .products-section {
   background: rgba(30, 41, 59, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 70%;
 }
 
 /* Categories section - 30% */
@@ -89,7 +90,7 @@ html, body, #root {
 .dark-mode .categories-section {
   background: rgba(30, 41, 59, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  width: 99%;
+  width: 70%;
 }
 
 /* Ensure ProductSection and CategorySection fill their containers */

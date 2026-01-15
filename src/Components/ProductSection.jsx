@@ -36,8 +36,26 @@ const ProductSection = ({
     }
   };
 
+  // Generate a consistent color based on product ID
+  const getProductColor = (productId, productName) => {
+    const colors = [
+      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+      'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+      'linear-gradient(135deg, #5ee7df 0%, #b490ca 100%)',
+      'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)',
+    ];
+    
+    // Use product ID to pick a consistent color
+    const index = (productId || 0) % colors.length;
+    return colors[index];
+  };
+
   return (
-    <div className="product-section-main">
+    <div className={`product-section-main ${darkMode ? 'dark-mode' : ''}`}>
       {/* Product Form Modal */}
       {showForm && (
         <div className="form-overlay">
@@ -71,6 +89,7 @@ const ProductSection = ({
               const cartQuantity = product.cartQuantity || 0;
               const isClicked = clickedProductId === product.id;
               const isInCart = cartQuantity > 0;
+              const productColor = getProductColor(product.id, product.name);
               
               return (
                 <div 
@@ -78,22 +97,19 @@ const ProductSection = ({
                   className={`product-card ${isInCart ? 'in-cart' : ''} ${isClicked ? 'clicked' : ''}`}
                   onClick={() => handleProductClick(product)}
                 >
-                  {/* Product Image */}
-                  <div className="product-image-container">
-                    {product.image ? (
-                      <img 
-                        src={product.image} 
-                        alt={product.name} 
-                        className="product-image"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.style.display = 'none';
-                          e.target.nextElementSibling.style.display = 'flex';
-                        }}
-                      />
-                    ) : null}
-                    <div className="image-placeholder">
-                      <FiImage />
+                  {/* Product Color Box */}
+                  <div 
+                    className="product-color-box"
+                    style={{ background: productColor }}
+                  >
+                    {/* Center Content */}
+                    <div className="product-center-content">
+                      <div className="product-name-center" title={product.name}>
+                        {product.name}
+                      </div>
+                      <div className="product-price-center">
+                        ${product.price.toFixed(2)}
+                      </div>
                     </div>
                     
                     {/* Cart Indicator */}
@@ -102,16 +118,6 @@ const ProductSection = ({
                         <FiCheck />
                       </div>
                     )}
-
-                    {/* Product Name Overlay */}
-                    <div className="product-name-overlay">
-                      <div className="product-name" title={product.name}>
-                        {product.name}
-                      </div>
-                      <div className="product-price">
-                        ${product.price.toFixed(2)}
-                      </div>
-                    </div>
 
                     {/* Product Badges */}
                     <div className="product-badges">
