@@ -18,13 +18,8 @@ function App() {
   const [categories, setCategories] = useState([]);
   const [dishes, setDishes] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
-  const [totalPrice, setTotalPrice] = useState(0);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
-  const [showProductForm, setShowProductForm] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('all');
-  const [calculatorQuantity, setCalculatorQuantity] = useState(0);
   const [cartItems, setCartItems] = useState([]);
   const [selectedDiscount, setSelectedDiscount] = useState(0);
   const [showCheckoutPanel, setShowCheckoutPanel] = useState(true);
