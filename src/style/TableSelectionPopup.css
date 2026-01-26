@@ -1,0 +1,253 @@
+/* TableSelectionPopup.css */
+
+.table-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.table-popup-container {
+  background-color: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 1200px; /* Increased from 800px */
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.table-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.table-popup-header-left h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.table-popup-subtitle {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.table-popup-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.table-popup-close:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+/* Updated for 8 columns per row */
+.tables-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr); /* 8 columns per row */
+  gap: 12px;
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.table-card {
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 120px;
+}
+
+.table-card.available {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+
+.table-card.booked {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+  cursor: not-allowed;
+}
+
+.table-card.available:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.table-card.selected {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+  border-width: 3px;
+}
+
+.table-card.disabled {
+  opacity: 0.7;
+}
+
+.table-status-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table-status-indicator.available {
+  background-color: #10b981;
+  color: white;
+}
+
+.table-status-indicator.booked {
+  background-color: #ef4444;
+  color: white;
+}
+
+.table-info {
+  margin-top: 8px;
+}
+
+.table-name {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.table-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.table-location svg {
+  width: 14px;
+  height: 14px;
+}
+
+.selection-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #3b82f6;
+  font-weight: 600;
+  font-size: 14px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #d1d5db;
+}
+
+.selection-indicator svg {
+  width: 16px;
+  height: 16px;
+}
+
+.table-popup-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-top: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.table-legend {
+  display: flex;
+  gap: 16px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.legend-color.available {
+  background-color: #10b981;
+}
+
+.legend-color.booked {
+  background-color: #ef4444;
+}
+
+.table-action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.cancel-btn, .confirm-btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.cancel-btn {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.cancel-btn:hover {
+  background-color: #e5e7eb;
+}
+
+.confirm-btn {
+  background-color: #d1d5db;
+  color: #9ca3af;
+}
+
+.confirm-btn.active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.confirm-btn.active:hover {
+  background-color: #2563eb;
+}
+
+.confirm-btn.disabled {
+  cursor: not-allowed;
+}

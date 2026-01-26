@@ -23,6 +23,9 @@ const CartTable = ({ cartItems, onRemoveFromCart, onUpdateQuantity }) => {
     }
   };
 
+  // Check if there are more than 9 items
+  const hasMoreThan9Items = cartItems.length > 9;
+
   return (
     <div className="cart-table-section">
       <div className="cart-table-header">
@@ -35,7 +38,7 @@ const CartTable = ({ cartItems, onRemoveFromCart, onUpdateQuantity }) => {
           <div className="cart-table-wrapper">
             {/* Table Header */}
             <div className="table-header-row">
-              <div className="table-col description">Description</div>
+              <div className="table-col name">Product</div>
               <div className="table-col qty">Qty</div>
               <div className="table-col price">Price</div>
               <div className="table-col total">Total</div>
@@ -43,17 +46,12 @@ const CartTable = ({ cartItems, onRemoveFromCart, onUpdateQuantity }) => {
             </div>
 
             {/* Table Body */}
-            <div className="cart-table-body">
+            <div className={`cart-table-body ${hasMoreThan9Items ? 'has-more-than-9' : ''}`}>
               {cartItems.map((item, index) => (
                 <div key={`${item.id}-${index}`} className="table-row">
-                  {/* Description Column */}
-                  <div className="table-col description">
-                    <div className="item-description">
-                      <div className="item-name">{item.name}</div>
-                      {item.description && (
-                        <div className="item-desc">{item.description}</div>
-                      )}
-                    </div>
+                  {/* Name Column */}
+                  <div className="table-col name">
+                    <div className="item-name">{item.name}</div>
                   </div>
 
                   {/* Quantity Column */}
@@ -79,16 +77,17 @@ const CartTable = ({ cartItems, onRemoveFromCart, onUpdateQuantity }) => {
                   {/* Price Column */}
                   <div className="table-col price">
                     <div className="price-amount">
-                      ${item.price.toFixed(2)}
+                      {item.price.toFixed(0)}
                     </div>
                   </div>
 
                   {/* Total Column */}
-                  <div className="table-col total">
-                    <div className="total-amount">
-                      ${calculateItemTotal(item)}
-                    </div>
-                  </div>
+                <div className="table-col total">
+  <div className="total-amount">
+    {Number(calculateItemTotal(item)).toFixed(0)}
+  </div>
+</div>
+
 
                   {/* Actions Column */}
                   <div className="table-col actions">
@@ -103,8 +102,6 @@ const CartTable = ({ cartItems, onRemoveFromCart, onUpdateQuantity }) => {
                 </div>
               ))}
             </div>
-
-          
           </div>
         ) : (
           <div className="empty-cart">

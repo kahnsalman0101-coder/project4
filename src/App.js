@@ -6,7 +6,9 @@ import CartTable from './Components/CartTable';
 import Calculator from './Components/Calculator';
 import TotalAmount from './Components/TotalAmount';
 import { initialCategories, initialDishes } from './services/dataService';
+import TableSelectionPopup from './Components/TableSelectionPopup';
 import './App.css';
+import { FiX, FiShoppingCart, FiCheckCircle, FiInfo, FiAlertTriangle } from 'react-icons/fi';
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -22,11 +24,21 @@ function App() {
   const [darkMode, setDarkMode] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
-  
+  const [calculatorQuantity, setCalculatorQuantity] = useState(0);
   const [cartItems, setCartItems] = useState([]);
-  const [selectedDiscount, setSelectedDiscount] = useState(10);
+  const [selectedDiscount, setSelectedDiscount] = useState(0);
   const [showCheckoutPanel, setShowCheckoutPanel] = useState(true);
   const [orderHistory, setOrderHistory] = useState([]);
+  const [showTablePopup, setShowTablePopup] = useState(false);
+  const [selectedTable, setSelectedTable] = useState(null);
+  
+  // Calculator state management
+  const [calculatorMode, setCalculatorMode] = useState('quantity');
+  const [calculatorValue, setCalculatorValue] = useState('1');
+  const [pendingQuantity, setPendingQuantity] = useState(1);
+  
+  // Toast notifications state
+  const [toasts, setToasts] = useState([]);
   
   const [stats, setStats] = useState({
     totalCategories: 0,
@@ -44,6 +56,59 @@ function App() {
   ]);
   
   const mainContentRef = useRef(null);
+  const calculatorRef = useRef(null);
+  const discountInputRef = useRef(null);
+
+  // Click outside handler - Simplified
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // If click is inside calculator, do nothing
+      if (calculatorRef.current && calculatorRef.current.contains(event.target)) {
+        return;
+      }
+      
+      // If click is on discount input in TotalAmount, switch to discount mode
+      const discountElement = event.target.closest('.discount-input-wrapper');
+      if (discountElement) {
+        setCalculatorMode('discount');
+        setCalculatorValue(selectedDiscount > 0 ? selectedDiscount.toString() : '0');
+        return;
+      }
+      
+      // If click is on a product AND we have a pending quantity, add to cart
+      const productElement = event.target.closest('.product-card');
+      if (productElement && calculatorMode === 'quantity' && pendingQuantity > 0) {
+        const productId = productElement.dataset.productId;
+        if (productId) {
+          handleAddToCartWithQuantity(productId, pendingQuantity);
+          // RESET calculator after adding to cart
+          setTimeout(() => {
+            resetCalculatorToDefault();
+          }, 100);
+          return;
+        }
+      }
+      
+      // For any other click, stay in quantity mode
+      if (calculatorMode === 'discount') {
+        setCalculatorMode('quantity');
+        setCalculatorValue(pendingQuantity.toString());
+      }
+    };
+    
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [calculatorMode, pendingQuantity, selectedDiscount]);
+
+  // Function to reset calculator to default
+  const resetCalculatorToDefault = () => {
+    if (calculatorMode === 'quantity') {
+      setCalculatorValue('1');
+      setPendingQuantity(1);
+    }
+  };
 
   useEffect(() => {
     const checkMobile = () => {
@@ -74,7 +139,6 @@ function App() {
     
     const dishesWithDetails = initialDishes.map(d => ({
       ...d,
-      quantity: Math.floor(Math.random() * 50) + 1,
       sku: `SKU${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
       lastUpdated: new Date().toISOString().split('T')[0],
       featured: Math.random() > 0.7,
@@ -94,10 +158,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const totalValue = dishes.reduce((sum, dish) => 
-      sum + (dish.price || 0) * (dish.quantity || 0), 0
-    );
-    
     const averagePrice = dishes.length > 0 
       ? dishes.reduce((sum, dish) => sum + (dish.price || 0), 0) / dishes.length 
       : 0;
@@ -105,15 +165,16 @@ function App() {
     setStats({
       totalCategories: categories.length,
       totalDishes: dishes.length,
-      lowStock: dishes.filter(d => d.quantity < 10 && d.quantity > 0).length,
-      outOfStock: dishes.filter(d => d.quantity === 0).length,
-      totalValue: totalValue,
+      lowStock: 0,
+      outOfStock: 0,
+      totalValue: 0,
       averagePrice: averagePrice
     });
     
-    setTotalPrice(totalValue);
+    setTotalPrice(0);
   }, [dishes, categories]);
 
+  // Update cart items whenever dishes change
   useEffect(() => {
     const itemsInCart = dishes.filter(d => d.inCart && d.cartQuantity > 0);
     setCartItems(itemsInCart);
@@ -128,6 +189,27 @@ function App() {
       localStorage.setItem('darkMode', 'false');
     }
   }, [darkMode]);
+
+  // Toast notification functions
+  const showToast = (message, type = 'warning') => {
+    const id = Date.now();
+    const newToast = {
+      id,
+      message,
+      type,
+      timestamp: new Date()
+    };
+    
+    setToasts(prev => [...prev, newToast]);
+    
+    setTimeout(() => {
+      removeToast(id);
+    }, 5000);
+  };
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
 
   const getFilteredDishes = () => {
     let filtered = dishes;
@@ -147,10 +229,10 @@ function App() {
     
     switch (activeTab) {
       case 'low-stock':
-        filtered = filtered.filter(dish => dish.quantity < 10 && dish.quantity > 0);
+        filtered = filtered.filter(dish => false);
         break;
       case 'out-of-stock':
-        filtered = filtered.filter(dish => dish.quantity === 0);
+        filtered = filtered.filter(dish => false);
         break;
       case 'featured':
         filtered = filtered.filter(dish => dish.featured);
@@ -165,6 +247,152 @@ function App() {
     return filtered;
   };
 
+  // Handle calculator input
+  const handleCalculatorInput = (value) => {
+    if (calculatorMode === 'discount') {
+      const discountValue = parseFloat(value) || 0;
+      const maxDiscount = calculateSubtotal() + calculateTax();
+      
+      if (discountValue > maxDiscount) {
+        setSelectedDiscount(maxDiscount);
+        setCalculatorValue(maxDiscount.toString());
+      } else {
+        setSelectedDiscount(discountValue);
+        setCalculatorValue(value.toString());
+      }
+    } else if (calculatorMode === 'quantity') {
+      const quantityValue = parseInt(value) || 1;
+      setCalculatorValue(value.toString());
+      setPendingQuantity(quantityValue);
+    }
+  };
+
+  // Handle calculator clear
+  const handleClearCalculator = () => {
+    if (calculatorMode === 'discount') {
+      setSelectedDiscount(0);
+      setCalculatorValue('0');
+    } else if (calculatorMode === 'quantity') {
+      setCalculatorValue('1');
+      setPendingQuantity(1);
+    }
+  };
+
+  // Handle calculator delete (backspace)
+  const handleCalculatorDelete = () => {
+    if (calculatorValue.length > 1) {
+      const newValue = calculatorValue.slice(0, -1);
+      setCalculatorValue(newValue);
+      
+      if (calculatorMode === 'discount') {
+        const discountValue = newValue ? parseFloat(newValue) : 0;
+        setSelectedDiscount(discountValue);
+      } else if (calculatorMode === 'quantity') {
+        const quantityValue = newValue ? parseInt(newValue) : 1;
+        setPendingQuantity(quantityValue);
+      }
+    } else {
+      // If display has only one digit
+      setCalculatorValue('1');
+      if (calculatorMode === 'discount') {
+        setSelectedDiscount(0);
+      } else if (calculatorMode === 'quantity') {
+        setPendingQuantity(1);
+      }
+    }
+  };
+
+  // Simple add to cart with quantity - UPDATED to reset calculator
+  const handleAddToCartWithQuantity = (productId, quantity) => {
+    const product = dishes.find(d => d.id === productId);
+    if (!product) return;
+    
+    handleAddToCart(product, quantity);
+    
+    
+    // Reset calculator to default after adding to cart
+    resetCalculatorToDefault();
+  };
+
+  // Handle adding to cart
+  const handleAddToCart = (dish, quantityToAdd = 1) => {
+    const existingDishIndex = dishes.findIndex(d => d.id === dish.id);
+    
+    if (existingDishIndex >= 0) {
+      const updatedDishes = [...dishes];
+      const dishToUpdate = updatedDishes[existingDishIndex];
+      
+      const newQuantity = dishToUpdate.cartQuantity + quantityToAdd;
+      
+      updatedDishes[existingDishIndex] = {
+        ...dishToUpdate,
+        inCart: true,
+        cartQuantity: newQuantity
+      };
+      
+      setDishes(updatedDishes);
+      
+      // Check if quantity is high and show warning
+      if (newQuantity >= 10) {
+        showToast(`High quantity: ${newQuantity}x ${dish.name} in cart`);
+      }
+    }
+  };
+
+  // Handle updating cart quantity (only from cart table)
+  const handleUpdateCartQuantity = (dishId, newQuantity) => {
+    if (newQuantity < 0) return;
+    
+    const updatedDishes = dishes.map(dish => 
+      dish.id === dishId 
+        ? { 
+            ...dish, 
+            cartQuantity: newQuantity,
+            inCart: newQuantity > 0
+          }
+        : dish
+    );
+    
+    setDishes(updatedDishes);
+    
+    // Check if quantity is high and show warning
+    if (newQuantity >= 10) {
+      const dish = dishes.find(d => d.id === dishId);
+      if (dish) {
+        showToast(`High quantity: ${newQuantity}x ${dish.name} in cart`);
+      }
+    }
+  };
+
+  // Handle removing from cart
+  const handleRemoveFromCart = (dishId) => {
+    setDishes(dishes.map(dish => 
+      dish.id === dishId 
+        ? { 
+            ...dish, 
+            inCart: false, 
+            cartQuantity: 0 
+          }
+        : dish
+    ));
+  };
+
+  const handleClearCart = () => {
+    if (cartItems.length === 0) {
+      return;
+    }
+    
+    setDishes(dishes.map(dish => ({
+      ...dish,
+      inCart: false,
+      cartQuantity: 0
+    })));
+    
+    // Reset calculator
+    resetCalculatorToDefault();
+    
+  };
+
   const handleAddCategory = (category) => {
     const newCategory = {
       ...category,
@@ -173,13 +401,6 @@ function App() {
       createdAt: new Date().toISOString()
     };
     setCategories([...categories, newCategory]);
-    
-    setNotifications(prev => [{
-      id: Date.now(),
-      message: `Category "${category.name}" added`,
-      type: 'success',
-      time: 'Just now'
-    }, ...prev.slice(0, 4)]);
   };
 
   const handleUpdateCategory = (updatedCategory) => {
@@ -189,6 +410,15 @@ function App() {
   };
 
   const handleDeleteCategory = (categoryId) => {
+    const category = categories.find(cat => cat.id === categoryId);
+    
+    if (!category) return;
+    
+    const dishesInCategory = dishes.filter(dish => dish.categoryId === categoryId);
+    if (dishesInCategory.length > 0) {
+      return;
+    }
+    
     setDishes(dishes.filter(dish => dish.categoryId !== categoryId));
     setCategories(categories.filter(cat => cat.id !== categoryId));
     if (selectedCategoryId === categoryId) {
@@ -200,7 +430,6 @@ function App() {
     const newDish = {
       ...dish,
       id: dish.id || `DISH${String(dishes.length + 1).padStart(3, '0')}`,
-      quantity: dish.quantity || 0,
       featured: dish.featured || false,
       sku: dish.sku || `SKU${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
       lastUpdated: new Date().toISOString().split('T')[0],
@@ -217,12 +446,6 @@ function App() {
       });
     }
     
-    setNotifications(prev => [{
-      id: Date.now(),
-      message: `Dish "${dish.name}" added`,
-      type: 'success',
-      time: 'Just now'
-    }, ...prev.slice(0, 4)]);
   };
 
   const handleUpdateDish = (updatedDish) => {
@@ -232,59 +455,19 @@ function App() {
   };
 
   const handleDeleteDish = (dishId) => {
-    setDishes(dishes.filter(dish => dish.id !== dishId));
-  };
-
-  const handleAddToCart = (dish) => {
-    setDishes(dishes.map(d => 
-      d.id === dish.id 
-        ? { 
-            ...d, 
-            inCart: true, 
-            cartQuantity: d.cartQuantity + 1 
-          }
-        : d
-    ));
-  };
-
-  const handleRemoveFromCart = (dishId) => {
-    setDishes(dishes.map(dish => 
-      dish.id === dishId 
-        ? { 
-            ...dish, 
-            inCart: false, 
-            cartQuantity: 0 
-          }
-        : dish
-    ));
-  };
-
-  const handleUpdateCartQuantity = (dishId, quantity) => {
-    if (quantity < 0) return;
-    
     const dish = dishes.find(d => d.id === dishId);
-    if (dish && quantity > dish.quantity) {
-      alert(`Only ${dish.quantity} items available in stock`);
-      return;
+    setDishes(dishes.filter(dish => dish.id !== dishId));
+    
+    const category = categories.find(cat => cat.id === dish?.categoryId);
+    if (category) {
+      handleUpdateCategory({
+        ...category,
+        dishCount: Math.max(0, (category.dishCount || 0) - 1)
+      });
     }
     
-    setDishes(dishes.map(dish => 
-      dish.id === dishId 
-        ? { 
-            ...dish, 
-            cartQuantity: quantity,
-            inCart: quantity > 0
-          }
-        : dish
-    ));
-  };
-
-  const handleClearCart = () => {
-    setDishes(dishes.map(dish => ({
-      ...dish,
-      inCart: false,
-      cartQuantity: 0
-    })));
+    if (dish) {
+    }
   };
 
   const calculateSubtotal = () => {
@@ -298,7 +481,18 @@ function App() {
   };
 
   const calculateDiscount = () => {
-    return calculateSubtotal() * (selectedDiscount / 100);
+    const totalBeforeDiscount = calculateSubtotal() + calculateTax();
+    let discountAmount = parseFloat(selectedDiscount) || 0;
+    
+    if (discountAmount > totalBeforeDiscount) {
+      discountAmount = totalBeforeDiscount;
+    }
+    
+    if (discountAmount < 0) {
+      discountAmount = 0;
+    }
+    
+    return discountAmount;
   };
 
   const calculateTotal = () => {
@@ -308,17 +502,38 @@ function App() {
     return subtotal + tax - discount;
   };
 
+  const handleDiscountChange = (discountValue) => {
+    const discountAmount = discountValue === '' ? 0 : parseFloat(discountValue);
+    
+    if (isNaN(discountAmount)) {
+      setSelectedDiscount(0);
+      setCalculatorValue('0');
+    } else {
+      setSelectedDiscount(Math.max(0, discountAmount));
+      setCalculatorValue(discountAmount.toString());
+    }
+    
+    setCalculatorMode('discount');
+  };
+
+  const handleDiscountFocus = () => {
+    setCalculatorMode('discount');
+    setCalculatorValue(selectedDiscount.toString());
+  };
+
   const handleCheckout = () => {
     if (cartItems.length === 0) {
-      alert('Please add items to cart first');
+      showToast('Cannot checkout with an empty cart', 'warning');
       return;
     }
     
-    // Create order record
+    // Create order with table information
     const order = {
       id: `ORD${Date.now()}`,
       date: new Date().toLocaleDateString(),
       time: new Date().toLocaleTimeString(),
+      table: selectedTable ? `${selectedTable.name} (${selectedTable.location})` : 'No Table Selected',
+      tableId: selectedTable?.id || null,
       items: cartItems.map(item => ({
         name: item.name,
         quantity: item.cartQuantity,
@@ -332,15 +547,12 @@ function App() {
       status: 'Completed'
     };
     
-    // Add to order history
     setOrderHistory(prev => [order, ...prev]);
     
-    // Update stock after checkout
     const updatedDishes = dishes.map(dish => {
       if (dish.inCart && dish.cartQuantity > 0) {
         return {
           ...dish,
-          quantity: Math.max(0, dish.quantity - dish.cartQuantity),
           inCart: false,
           cartQuantity: 0
         };
@@ -350,15 +562,14 @@ function App() {
     
     setDishes(updatedDishes);
     
-    // Clear cart
     handleClearCart();
+    setSelectedDiscount(0);
+    setCalculatorValue('1');
+    setPendingQuantity(1);
+    setCalculatorMode('quantity');
     
-    setNotifications(prev => [{
-      id: Date.now(),
-      message: `Order #${order.id} completed successfully`,
-      type: 'success',
-      time: 'Just now'
-    }, ...prev.slice(0, 4)]);
+    // Show toast with table information
+    const tableInfo = selectedTable ? ` for Table ${selectedTable.name}` : '';
   };
 
   const handleExport = () => {
@@ -382,12 +593,17 @@ function App() {
   };
 
   const handleClearAll = () => {
-    if (window.confirm('Are you sure you want to clear all data?')) {
+    if (window.confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
       setCategories([]);
       setDishes([]);
       setSelectedCategoryId(null);
       setCartItems([]);
       setOrderHistory([]);
+      setCalculatorValue('1');
+      setSelectedDiscount(0);
+      setPendingQuantity(1);
+      setCalculatorMode('quantity');
+      setSelectedTable(null);
     }
   };
 
@@ -398,6 +614,93 @@ function App() {
   const handleClearNotification = (id) => {
     setNotifications(notifications.filter(notif => notif.id !== id));
   };
+
+  // Table selection functions
+  const handleOrder1st = () => {
+  };
+
+  const handleOrder2nd = () => {
+  };
+
+  const handleTakeAway = () => {
+    // Set table to takeaway mode
+    setSelectedTable({
+      id: 'takeaway',
+      name: 'Take Away',
+      location: 'Counter',
+      isAvailable: true
+    });
+  };
+
+  const handleNewOrder = () => {
+    if (cartItems.length > 0) {
+      if (window.confirm('Start a new order? Current cart will be cleared.')) {
+        handleClearCart();
+        setShowTablePopup(true);
+      }
+    } else {
+      setShowTablePopup(true);
+    }
+  };
+
+  // Handle table selection from popup
+  const handleTableSelect = (table) => {
+    setSelectedTable(table);
+    setShowTablePopup(false);
+  };
+
+  // Handle opening table popup from ProductSection textbox
+  const handleTableTextboxClick = () => {
+    setShowTablePopup(true);
+  };
+
+  // Toast Container Component
+  const ToastContainer = () => (
+    <div className="toast-container">
+      {toasts.map(toast => {
+        let borderColor = '#ef4444';
+        let bgColor = '#fef2f2';
+        let iconColor = '#ef4444';
+        
+        if (toast.type === 'success') {
+          borderColor = '#10b981';
+          bgColor = '#ecfdf5';
+          iconColor = '#10b981';
+        } else if (toast.type === 'info') {
+          borderColor = '#3b82f6';
+          bgColor = '#eff6ff';
+          iconColor = '#3b82f6';
+        }
+        
+        return (
+          <div 
+            key={toast.id}
+            className="toast"
+            style={{ borderLeftColor: borderColor, backgroundColor: bgColor }}
+            onClick={() => removeToast(toast.id)}
+          >
+            <div className="toast-icon" style={{ color: iconColor }}>
+              {toast.type === 'success' ? <FiCheckCircle /> : toast.type === 'info' ? <FiInfo /> : <FiAlertTriangle />}
+            </div>
+            <div className="toast-content">
+              <div className="toast-message" style={{ color: '#111827', fontWeight: '600' }}>
+                {toast.message}
+              </div>
+              <div className="toast-time" style={{ color: '#6b7280' }}>
+                {new Date(toast.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </div>
+            </div>
+            <button className="toast-close" onClick={(e) => {
+              e.stopPropagation();
+              removeToast(toast.id);
+            }}>
+              <FiX style={{ color: '#9ca3af' }} />
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
 
   return (
     <div className={`App ${darkMode ? 'dark-mode' : ''}`}>
@@ -410,7 +713,7 @@ function App() {
         stats={stats}
         notifications={notifications}
         onClearNotification={handleClearNotification}
-        cartCount={cartItems.length}
+        cartCount={cartItems.reduce((sum, item) => sum + item.cartQuantity, 0)}
         onToggleCheckout={toggleCheckoutPanel}
         showCheckoutPanel={showCheckoutPanel}
         onExport={handleExport}
@@ -425,6 +728,8 @@ function App() {
           width: isMobile ? '100%' : `calc(100% - ${sidebarWidth}px)`,
         }}
       >
+        <ToastContainer />
+        
         <div className="background-effects">
           <div className="gradient-blob blob-1"></div>
           <div className="gradient-blob blob-2"></div>
@@ -433,9 +738,7 @@ function App() {
         
         <div className="inventory-container">
           <div className="main-layout-grid">
-            {/* Left Column */}
             <div className="left-column">
-              {/* Product Section - 60% height */}
               <div className="products-section" style={{ height: '60vh' }}>
                 <ProductSection
                   products={getFilteredDishes()}
@@ -445,13 +748,15 @@ function App() {
                   onAddProduct={handleAddDish}
                   onUpdateProduct={handleUpdateDish}
                   onDeleteProduct={handleDeleteDish}
-                  onAddToCart={handleAddToCart}
-                  onShowFormChange={setShowProductForm}
+                  onAddToCart={handleAddToCartWithQuantity}
                   darkMode={darkMode}
+                  pendingQuantity={pendingQuantity}
+                  calculatorMode={calculatorMode}
+                  selectedTable={selectedTable}
+                  onTableTextboxClick={handleTableTextboxClick}
                 />
               </div>
               
-              {/* Category Section - 40% height */}
               <div className="categories-section" style={{ height: '40vh' }}>
                 <CategorySection
                   categories={categories}
@@ -462,14 +767,16 @@ function App() {
                   onUpdateCategory={handleUpdateCategory}
                   onDeleteCategory={handleDeleteCategory}
                   onShowFormChange={setShowCategoryForm}
+                  onOrder1st={handleOrder1st}
+                  onOrder2nd={handleOrder2nd}
+                  onTakeAway={handleTakeAway}
+                  onNewOrder={handleNewOrder}
                   darkMode={darkMode}
                 />
               </div>
             </div>
             
-            {/* Right Column */}
             <div className="right-column">
-              {/* Cart Table - 15% height */}
               <div className="cart-table-section" style={{ height: '15vh' }}>
                 <CartTable
                   cartItems={cartItems}
@@ -478,17 +785,20 @@ function App() {
                 />
               </div>
               
-              {/* Calculator - 7% height */}
               <div className="calculator-section" style={{ height: '7vh' }}>
-                <Calculator
-                  onCalculate={(result) => {
-                    // Handle calculation result if needed
-                  }}
-                  onClear={handleClearCart}
-                />
+                <div ref={calculatorRef}>
+                  <Calculator
+                    onNumberSelect={handleCalculatorInput}
+                    onClear={handleClearCalculator}
+                    onDelete={handleCalculatorDelete}
+                    currentValue={calculatorValue}
+                    calculatorMode={calculatorMode}
+                    pendingQuantity={pendingQuantity}
+                    onResetTrigger={resetCalculatorToDefault} // Pass reset function
+                  />
+                </div>
               </div>
               
-              {/* Total Amount - Remaining height */}
               <div className="total-section" style={{ height: '78vh' }}>
                 <TotalAmount
                   cartItems={cartItems}
@@ -497,25 +807,28 @@ function App() {
                   discount={calculateDiscount()}
                   total={calculateTotal()}
                   selectedDiscount={selectedDiscount}
-                  onDiscountChange={setSelectedDiscount}
+                  onDiscountChange={handleDiscountChange}
+                  onDiscountFocus={handleDiscountFocus}
                   onCheckout={handleCheckout}
+                  onClearCart={handleClearCart}
                   orderHistory={orderHistory}
+                  discountInputRef={discountInputRef}
+                  pendingQuantity={pendingQuantity}
+                  selectedTable={selectedTable}
                 />
               </div>
             </div>
           </div>
-          
-          {isMobile && (
-            <button 
-              className="mobile-checkout-toggle"
-              onClick={toggleCheckoutPanel}
-            >
-              <span className="cart-icon">🛒</span>
-              <span className="cart-count">{cartItems.length}</span>
-            </button>
-          )}
         </div>
       </div>
+
+      {/* Table Selection Popup */}
+      <TableSelectionPopup
+        isOpen={showTablePopup}
+        onClose={() => setShowTablePopup(false)}
+        onTableSelect={handleTableSelect}
+        currentTableId={selectedTable?.id}
+      />
     </div>
   );
 }

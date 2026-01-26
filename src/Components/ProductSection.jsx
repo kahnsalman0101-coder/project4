@@ -1,136 +1,185 @@
-import React, { useState } from 'react';
-import { 
-  FiBox,
-  FiImage,
-  FiShoppingCart,
-  FiStar,
-  FiCheck
-} from 'react-icons/fi';
-import ProductForm from './ProductForm';
+import React, { useState, useEffect } from 'react';
+import { FiBox, FiCheck, FiPlus, FiTable, FiMapPin } from 'react-icons/fi';
 import '../style/ProductSection.css';
 
 const ProductSection = ({
   products = [],
   selectedCategory,
-  showForm,
   selectedCategoryId,
-  onAddProduct,
-  onUpdateProduct,
-  onDeleteProduct,
   onAddToCart,
-  onShowFormChange,
-  darkMode
+  darkMode,
+  pendingQuantity = 1,
+  calculatorMode = 'quantity',
+  selectedTable = null,
+  onTableTextboxClick
 }) => {
-  const [clickedProductId, setClickedProductId] = useState(null);
-  const [editingProduct, setEditingProduct] = useState(null);
+  const [localProducts, setLocalProducts] = useState([]);
 
-  const handleProductClick = (product) => {
-    if (onAddToCart) {
-      onAddToCart(product);
-      
-      // Show click animation
-      setClickedProductId(product.id);
-      setTimeout(() => {
-        setClickedProductId(null);
-      }, 600);
+  useEffect(() => {
+    const sortedProducts = [...products].sort((a, b) => a.orderBy - b.orderBy);
+    
+    if (sortedProducts.length > 0 && !selectedCategoryId && sortedProducts[0]?.categoryId) {
+      const firstCategoryProducts = sortedProducts.filter(
+        product => product.categoryId === sortedProducts[0].categoryId
+      );
+      setLocalProducts(firstCategoryProducts);
+    } else {
+      setLocalProducts(sortedProducts);
+    }
+  }, [products, selectedCategoryId]);
+
+  const getTextClass = (name) => {
+    const length = name?.length || 0;
+    if (length > 30) return 'long-text';
+    if (length > 15) return 'medium-text';
+    return 'short-text';
+  };
+
+  // Handle product click
+  const handleProductClick = (product, event) => {
+    if (event) event.stopPropagation();
+    
+    // Only add to cart if calculator is in quantity mode and we have a pending quantity
+    if (calculatorMode === 'quantity' && pendingQuantity > 0) {
+      if (onAddToCart) {
+        onAddToCart(product.id, pendingQuantity);
+      }
     }
   };
 
-  // Generate a consistent color based on product ID
-  const getProductColor = (productId, productName) => {
-    const colors = [
-      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-      'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-      'linear-gradient(135deg, #5ee7df 0%, #b490ca 100%)',
-      'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)',
-    ];
+  // Handle price button click - always adds 1
+  const handlePriceButtonClick = (product, event) => {
+    if (event) event.stopPropagation();
     
-    // Use product ID to pick a consistent color
-    const index = (productId || 0) % colors.length;
-    return colors[index];
+    if (onAddToCart) {
+      onAddToCart(product.id, 1);
+    }
+  };
+
+  // Handle table textbox click
+  const handleTableTextboxClick = () => {
+    if (onTableTextboxClick) {
+      onTableTextboxClick();
+    }
+  };
+
+  // Get table color
+  const getTableColor = () => {
+    if (selectedTable) {
+      // If table has color property, use it
+      if (selectedTable.color) return selectedTable.color;
+      
+      // Otherwise assign color based on table number
+      const tableColors = {
+        1: '#3b82f6', // Blue
+        2: '#10b981', // Green
+        3: '#f59e0b', // Amber
+        4: '#ef4444', // Red
+        5: '#8b5cf6', // Purple
+        6: '#ec4899', // Pink
+        7: '#06b6d4', // Cyan
+        8: '#84cc16', // Lime
+        9: '#f97316', // Orange
+        10: '#14b8a6', // Teal
+        11: '#6366f1', // Indigo
+        12: '#22c55e', // Emerald
+        13: '#3b82f6', // Blue
+        14: '#10b981', // Green
+        15: '#f59e0b', // Amber
+        16: '#ef4444', // Red
+        'takeaway': '#10b981' // Green for takeaway
+      };
+      
+      return tableColors[selectedTable.id] || '#667eea';
+    }
+    return '#6b7280'; // Gray when no table selected
   };
 
   return (
     <div className={`product-section-main ${darkMode ? 'dark-mode' : ''}`}>
-      {/* Product Form Modal */}
-      {showForm && (
-        <div className="form-overlay">
-          <div className="form-modal">
-            <ProductForm
-              product={editingProduct}
-              selectedCategoryId={selectedCategoryId}
-              onSubmit={(data) => {
-                if (editingProduct) {
-                  onUpdateProduct(data);
-                } else {
-                  onAddProduct(data);
-                }
-                setEditingProduct(null);
-                onShowFormChange(false);
-              }}
-              onCancel={() => {
-                setEditingProduct(null);
-                onShowFormChange(false);
-              }}
-            />
+      {/* Small Table Selection Textbox */}
+      <div 
+        className="table-selection-input" 
+        onClick={handleTableTextboxClick}
+        style={{ 
+          backgroundColor: getTableColor(),
+          background: selectedTable 
+            ? `linear-gradient(135deg, ${getTableColor()}, ${darkenColor(getTableColor(), 20)})`
+            : 'linear-gradient(135deg, #6b7280, #4b5563)'
+        }}
+        title={selectedTable ? `Table: ${selectedTable.name} (${selectedTable.location})` : 'Click to select table'}
+      >
+        <div className="table-input-icon">
+          <FiTable />
+        </div>
+        <div className="table-input-content">
+          <div className="table-input-value">
+            {selectedTable ? (
+              <>
+                <span className="table-input-name">{selectedTable.name}</span>
+                {selectedTable.location && (
+                  <span className="table-input-location">
+                    <FiMapPin /> {selectedTable.location}
+                  </span>
+                )}
+              </>
+            ) : (
+              <span className="table-input-placeholder">Select Table</span>
+            )}
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Products Grid */}
       <div className="products-grid-container">
-        {products.length > 0 ? (
+        {localProducts.length > 0 ? (
           <div className="products-grid">
-            {products.map(product => {
+            {localProducts.map(product => {
+              const textClass = getTextClass(product.name);
               const cartQuantity = product.cartQuantity || 0;
-              const isClicked = clickedProductId === product.id;
               const isInCart = cartQuantity > 0;
-              const productColor = getProductColor(product.id, product.name);
+              const hasPendingQuantity = calculatorMode === 'quantity' && pendingQuantity > 0;
               
               return (
                 <div 
                   key={product.id} 
-                  className={`product-card ${isInCart ? 'in-cart' : ''} ${isClicked ? 'clicked' : ''}`}
-                  onClick={() => handleProductClick(product)}
+                  data-product-id={product.id}
+                  className={`product-card ${isInCart ? 'in-cart' : ''} ${hasPendingQuantity ? 'pending-add-mode' : ''}`}
+                  onClick={(e) => handleProductClick(product, e)}
+                  title={
+                    hasPendingQuantity 
+                      ? `Click to add ${pendingQuantity}x ${product.name} to cart` 
+                      : `Click to add 1x ${product.name} to cart`
+                  }
+                  style={{ 
+                    background: product.color || '#667eea',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}
                 >
-                  {/* Product Color Box */}
-                  <div 
-                    className="product-color-box"
-                    style={{ background: productColor }}
-                  >
-                    {/* Center Content */}
-                    <div className="product-center-content">
-                      <div className="product-name-center" title={product.name}>
-                        {product.name}
-                      </div>
-                      <div className="product-price-center">
-                        ${product.price.toFixed(2)}
-                      </div>
+                  {/* Checkmark Indicator */}
+                  {isInCart && (
+                    <div className="cart-checkmark-indicator">
+                      <FiCheck />
                     </div>
-                    
-                    {/* Cart Indicator */}
-                    {isInCart && (
-                      <div className="cart-indicator">
-                        <FiCheck />
-                      </div>
-                    )}
-
-                    {/* Product Badges */}
-                    <div className="product-badges">
-                      {product.featured && (
-                        <div className="badge featured">
-                          <FiStar />
-                        </div>
-                      )}
-                      {product.quantity < 10 && (
-                        <div className="badge low-stock">
-                          {product.quantity}
-                        </div>
-                      )}
+                  )}
+              
+                  
+                  {/* Product Name */}
+                  <div className={`product-name-top ${textClass}`} title={product.name}>
+                    {product.name}
+                  </div>
+                  
+                  
+                  {/* Price Button */}
+                  <div className="product-price-bottom-right">
+                    <div 
+                      className={`price-button ${hasPendingQuantity && pendingQuantity > 1 ? 'pending-mode' : ''}`}
+                      onClick={(e) => handlePriceButtonClick(product, e)}
+                      title="Add 1 to cart"
+                    >
+                      <span className="price-currency">Rs</span>
+                      <span className="price-value">{product.price.toFixed(0)}</span>
                     </div>
                   </div>
                 </div>
@@ -154,6 +203,28 @@ const ProductSection = ({
       </div>
     </div>
   );
+};
+
+// Helper function to darken color for gradient
+const darkenColor = (color, percent) => {
+  let r = 0, g = 0, b = 0;
+  
+  if (color.startsWith('#')) {
+    r = parseInt(color.slice(1, 3), 16);
+    g = parseInt(color.slice(3, 5), 16);
+    b = parseInt(color.slice(5, 7), 16);
+  } else if (color.startsWith('rgb')) {
+    const rgb = color.match(/\d+/g);
+    r = parseInt(rgb[0]);
+    g = parseInt(rgb[1]);
+    b = parseInt(rgb[2]);
+  }
+  
+  r = Math.floor(r * (100 - percent) / 100);
+  g = Math.floor(g * (100 - percent) / 100);
+  b = Math.floor(b * (100 - percent) / 100);
+  
+  return `rgb(${r}, ${g}, ${b})`;
 };
 
 export default ProductSection;

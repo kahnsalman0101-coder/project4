@@ -1,10 +1,12 @@
-/* Total Amount Section - Fixed at bottom right, 10% width, 20% height */
+/* TotalAmount.css */
+
+/* Total Amount Section - Fixed at bottom right, 12% width, 30% height */
 .total-amount-section {
-  width: 10vw;
+  width: 12vw;
   height: 30vh;
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-radius: 16px;
-  padding: 12px;
+  padding: 10px;
   box-shadow: 
     0 15px 40px rgba(0, 0, 0, 0.1),
     0 6px 15px rgba(0, 0, 0, 0.05),
@@ -24,20 +26,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
-  padding-bottom: 6px;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
   border-bottom: 1px solid #e2e8f0;
-  height: 12%;
-  min-height: 24px;
+  height: 8%;
+  min-height: 20px;
 }
 
 .total-title {
-  font-size: 0.8vw;
+  font-size: 0.7vw;
   font-weight: 700;
   color: #1e293b;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -45,8 +47,8 @@
 }
 
 .total-title svg {
-  width: 1vw;
-  height: 1vw;
+  width: 0.8vw;
+  height: 0.8vw;
   color: #64748b;
   flex-shrink: 0;
 }
@@ -55,15 +57,15 @@
   background: #f1f5f9;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 0.6vw;
+  padding: 2px 4px;
+  font-size: 0.5vw;
   font-weight: 600;
   color: #475569;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   min-height: 0;
   white-space: nowrap;
 }
@@ -78,140 +80,263 @@
 }
 
 .print-btn svg {
-  width: 0.8vw;
-  height: 0.8vw;
+  width: 0.6vw;
+  height: 0.6vw;
   flex-shrink: 0;
 }
 
-.datetime-display {
+/* Input Boxes Container - UPDATED: Removed scroll, adjusted for proper fit */
+.amount-breakdown {
+  flex: 1;
   display: flex;
-  gap: 6px;
-  margin-bottom: 8px;
+  flex-direction: column;
+  justify-content: space-between; /* Evenly distribute space */
+  margin: 5px 0;
+  padding: 2px 0;
+  /* Removed scroll properties */
+}
+
+/* Common Input Box Styles - Adjusted for compact layout */
+.input-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-height: 0; /* Allow shrinking */
+  margin: 1px 0;
+  justify-content: center; /* Center content vertically */
+}
+
+/* NEW: Labels removed - we'll use placeholders/positioned text inside inputs */
+.input-label {
+  display: none; /* Hide the external labels */
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 26px; /* Reduced from 32px */
+}
+
+/* NEW: Text inside Total input box */
+.total-input-box .input-wrapper::before {
+  content: "Total";
+  position: absolute;
+  left: 6px;
+  font-size: 0.65vw;
+  font-weight: 600;
+  color: #1e40af;
+  z-index: 2;
+  background: #eff6ff;
+  padding: 0 4px;
+  border-radius: 3px;
+}
+
+.input-currency {
+  position: absolute;
+  left: 35px; /* Adjusted to make space for the label text */
+  font-size: 0.65vw;
+  font-weight: 600;
+  color: #64748b;
+  z-index: 1;
+}
+
+.input-field {
+  width: 100%;
+  height: 100%;
+  background: white;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 3px 5px 3px 60px; /* Adjusted left padding for label text */
+  font-size: 0.8vw;
+  font-weight: 700;
+  color: #1e293b;
+  font-family: 'Courier New', monospace;
+  text-align: right;
+  outline: none;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.input-field:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* Total Input Box */
+.total-input-box {
+  border-left: 3px solid #3b82f6;
+  background: linear-gradient(135deg, #eff6ff, #ffffff);
+  padding: 5px;
+  margin-bottom: 3px;
+}
+
+.total-input-box .input-field {
+  border-color: #93c5fd;
+  background: #f8fafc;
+  color: #1e40af;
+}
+
+/* Discount Input Box */
+.discount-input-box {
+  border-left: 3px solid #f59e0b;
+  background: linear-gradient(135deg, #fffbeb, #ffffff);
+  padding: 5px;
+  margin: 2px 0;
+}
+
+/* NEW: Text inside Discount input box */
+.discount-input-wrapper::before {
+  content: "Discount (Rs)";
+  position: absolute;
+  left: 6px;
+  font-size: 0.65vw;
+  font-weight: 600;
+  color: #92400e;
+  z-index: 2;
+  background: #fffbeb;
+  padding: 0 4px;
+  border-radius: 3px;
+}
+
+.discount-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 26px; /* Reduced from 32px */
+}
+
+.discount-currency-icon {
+  position: absolute;
+  left: 80px; /* Adjusted to make space for the label text */
+  z-index: 1;
+  color: #d97706;
+  font-size: 0.65vw;
+  display: flex;
+  align-items: center;
+}
+
+.discount-input-field {
+  width: 100%;
+  height: 100%;
+  background: #fffbeb;
+  border: 1.5px solid #fbbf24;
+  border-radius: 6px;
+  padding: 3px 22px 3px 100px; /* Adjusted left padding for label text */
+  font-size: 0.8vw;
+  font-weight: 700;
+  color: #92400e;
+  font-family: 'Courier New', monospace;
+  text-align: right;
+  outline: none;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.discount-input-field:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1);
+  background: #fff;
+}
+
+.discount-input-field::placeholder {
+  color: #d97706;
+  opacity: 0.6;
+}
+
+.discount-currency-label {
+  position: absolute;
+  right: 5px;
+  font-size: 0.65vw;
+  font-weight: 600;
+  color: #d97706;
+  z-index: 1;
+}
+
+/* Removed discount percentage display to save space */
+.discount-percentage-display {
+  display: none;
+}
+
+/* Net Input Box */
+.net-input-box {
+  border-left: 3px solid #10b981;
+  background: linear-gradient(135deg, #ecfdf5, #ffffff);
+  padding: 0px;
+  margin-top: 0px;
+}
+
+/* NEW: Text inside Net input box */
+.net-input-box .input-wrapper::before {
+  content: "Total Net";
+  position: absolute;
+  left: 6px;
+  font-size: 0.65vw;
+  font-weight: 600;
+  color: #047857;
+  z-index: 2;
+  background: #ecfdf5;
+  padding: 0 4px;
+  border-radius: 3px;
+}
+
+.net-input-box .input-currency {
+  color: #047857;
+  left: 60px; /* Adjusted to make space for the label text */
+}
+
+.net-input-box .input-field {
+  border-color: #10b981;
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 0.85vw;
+  font-weight: 800;
+  padding-left: 85px; /* Adjusted left padding for label text */
+}
+
+/* Active indicator for discount */
+.active-indicator {
+  position: absolute;
+  right: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.indicator-dot {
+  width: 8px;
+  height: 8px;
+  background: #3b82f6;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+/* Checkout Section */
+.checkout-section {
+  margin-top: 5px;
   height: 12%;
   min-height: 24px;
 }
 
-.date-item, .time-item {
-  flex: 1;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  padding: 5px 6px;
-  font-size: 0.6vw;
-  color: #475569;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  font-weight: 500;
-  overflow: hidden;
-  min-height: 0;
-}
-
-.date-item span, .time-item span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-}
-
-.date-item svg, .time-item svg {
-  width: 0.7vw;
-  height: 0.7vw;
-  flex-shrink: 0;
-  color: #94a3b8;
-}
-
-.amount-breakdown {
-  flex: 1;
-  margin-bottom: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  height: 48%;
-  overflow-y: auto;
-  padding-right: 2px;
-}
-
-.amount-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.7vw;
-  padding: 4px 0;
-  border-bottom: 1px dashed #e2e8f0;
-  min-height: 20px;
-}
-
-.amount-row:last-child {
-  border-bottom: none;
-}
-
-.amount-value {
-  font-weight: 600;
-  color: #475569;
-  font-family: 'Courier New', monospace;
-  white-space: nowrap;
-}
-
-.discount-row {
-  padding: 5px 0;
-}
-
-.discount-control {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.discount-select {
-  background: white;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  padding: 2px 4px;
-  font-size: 0.6vw;
-  color: #475569;
-  font-weight: 500;
-  cursor: pointer;
-  min-width: 0;
-  width: 45px;
-}
-
-.discount-value {
-  color: #ef4444;
-  font-weight: 700;
-}
-
-.total-row {
-  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-  border-radius: 8px;
-  padding: 6px 8px;
-  margin-top: 2px;
-  border: 1px solid #cbd5e1;
-  font-weight: 700;
-  font-size: 0.75vw;
-}
-
-.total-amount {
-  font-size: 0.9vw;
-  font-weight: 800;
-  color: #1e293b;
-  font-family: 'Courier New', monospace;
-}
-
-.checkout-section {
-  margin-top: 2px;
-  height: 20%;
-  min-height: 32px;
-}
-
 .checkout-btn {
   width: 100%;
+  height: 100%;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   border: none;
   border-radius: 8px;
-  padding: 8px;
-  font-size: 0.7vw;
+  font-size: 0.6vw;
   font-weight: 700;
   color: white;
   cursor: pointer;
@@ -219,15 +344,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  box-shadow: 0 3px 6px rgba(16, 185, 129, 0.3);
+  gap: 3px;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
   min-height: 0;
 }
 
 .checkout-btn:hover:not(:disabled) {
   background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(16, 185, 129, 0.4);
 }
 
 .checkout-btn:active:not(:disabled) {
@@ -241,31 +366,12 @@
 }
 
 .checkout-btn svg {
-  width: 1vw;
-  height: 1vw;
+  width: 0.8vw;
+  height: 0.8vw;
   flex-shrink: 0;
 }
 
-/* Scrollbar */
-.amount-breakdown::-webkit-scrollbar {
-  width: 3px;
-}
-
-.amount-breakdown::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 2px;
-}
-
-.amount-breakdown::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 2px;
-}
-
-.amount-breakdown::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Dark Mode */
+/* DARK MODE */
 .dark-mode .total-amount-section {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   border-color: #334155;
@@ -279,10 +385,6 @@
   color: #f1f5f9;
 }
 
-.dark-mode .total-title svg {
-  color: #94a3b8;
-}
-
 .dark-mode .print-btn {
   background: #334155;
   border-color: #475569;
@@ -294,246 +396,294 @@
   border-color: #64748b;
 }
 
-.dark-mode .date-item, 
-.dark-mode .time-item {
-  background: #1e293b;
-  border-color: #334155;
+.dark-mode .input-label {
   color: #cbd5e1;
 }
 
-.dark-mode .date-item svg,
-.dark-mode .time-item svg {
-  color: #64748b;
+.dark-mode .input-currency {
+  color: #94a3b8;
 }
 
-.dark-mode .amount-row {
-  border-bottom-color: #334155;
-  color: #cbd5e1;
-}
-
-.dark-mode .amount-value {
-  color: #e2e8f0;
-}
-
-.dark-mode .discount-select {
+.dark-mode .input-field {
   background: #334155;
   border-color: #475569;
-  color: #cbd5e1;
-}
-
-.dark-mode .total-row {
-  background: linear-gradient(135deg, #1e293b, #0f172a);
-  border-color: #475569;
   color: #f1f5f9;
 }
 
-.dark-mode .total-amount {
-  color: #f1f5f9;
+.dark-mode .total-input-box {
+  background: linear-gradient(135deg, #1e3a8a, #1e293b);
+  border-left-color: #3b82f6;
 }
 
-.dark-mode .amount-breakdown::-webkit-scrollbar-track {
-  background: #0f172a;
+.dark-mode .total-input-box .input-wrapper::before {
+  color: #93c5fd;
+  background: #1e3a8a;
 }
 
-.dark-mode .amount-breakdown::-webkit-scrollbar-thumb {
-  background: #475569;
+.dark-mode .total-input-box .input-field {
+  background: #1e3a8a;
+  border-color: #3b82f6;
+  color: #93c5fd;
+}
+
+.dark-mode .discount-input-box {
+  background: linear-gradient(135deg, #451a03, #1e293b);
+  border-left-color: #f59e0b;
+}
+
+.dark-mode .discount-input-wrapper::before {
+  color: #fbbf24;
+  background: #451a03;
+}
+
+.dark-mode .discount-input-field {
+  background: #451a03;
+  border-color: #f59e0b;
+  color: #fbbf24;
+}
+
+.dark-mode .discount-currency-icon,
+.dark-mode .discount-currency-label {
+  color: #fbbf24;
+}
+
+.dark-mode .net-input-box {
+  background: linear-gradient(135deg, #064e3b, #1e293b);
+  border-left-color: #10b981;
+}
+
+.dark-mode .net-input-box .input-wrapper::before {
+  color: #5eead4;
+  background: #064e3b;
+}
+
+.dark-mode .net-input-box .input-field {
+  background: #064e3b;
+  border-color: #10b981;
+  color: #5eead4;
+}
+
+.dark-mode .indicator-dot {
+  background: #60a5fa;
 }
 
 /* Responsive adjustments */
 @media (max-width: 1400px) {
   .total-amount-section {
-    width: 12vw;
-    height: 22vh;
+    width: 14vw;
+    height: 32vh;
   }
   
   .total-title {
-    font-size: 1vw;
+    font-size: 0.85vw;
   }
   
   .print-btn {
-    font-size: 0.8vw;
-    padding: 3px 6px;
+    font-size: 0.65vw;
   }
   
-  .date-item, .time-item {
-    font-size: 0.8vw;
-    padding: 4px 5px;
-  }
-  
-  .amount-row {
+  .input-field {
     font-size: 0.85vw;
+    padding: 2px 4px 2px 55px;
   }
   
-  .total-amount {
-    font-size: 1.1vw;
+  .discount-input-field {
+    font-size: 0.85vw;
+    padding: 2px 20px 2px 95px;
+  }
+  
+  .total-input-box .input-wrapper::before,
+  .discount-input-wrapper::before,
+  .net-input-box .input-wrapper::before {
+    font-size: 0.75vw;
+  }
+  
+  .input-currency {
+    font-size: 0.75vw;
+  }
+  
+  .discount-currency-icon {
+    font-size: 0.75vw;
+  }
+  
+  .discount-currency-label {
+    font-size: 0.75vw;
+  }
+  
+  .net-input-box .input-field {
+    font-size: 0.9vw;
+    padding-left: 80px;
   }
   
   .checkout-btn {
-    font-size: 0.85vw;
-    padding: 7px;
+    font-size: 0.7vw;
   }
 }
 
 @media (max-width: 1200px) {
   .total-amount-section {
-    width: 14vw;
-    height: 24vh;
-    padding: 10px;
-  }
-  
-  .total-title {
-    font-size: 1.2vw;
-  }
-  
-  .print-btn {
-    font-size: 0.9vw;
-    padding: 3px 5px;
-  }
-  
-  .date-item, .time-item {
-    font-size: 0.9vw;
-  }
-  
-  .amount-row {
-    font-size: 1vw;
-  }
-  
-  .total-amount {
-    font-size: 1.3vw;
-  }
-  
-  .checkout-btn {
-    font-size: 1vw;
-    padding: 6px;
-  }
-}
-
-@media (max-width: 992px) {
-  .total-amount-section {
     width: 16vw;
-    height: 26vh;
+    height: 34vh;
     padding: 8px;
   }
   
   .total-title {
-    font-size: 1.4vw;
+    font-size: 1vw;
   }
   
   .print-btn {
-    font-size: 1vw;
+    font-size: 0.75vw;
   }
   
-  .date-item, .time-item {
-    font-size: 1vw;
+  .input-field {
+    font-size: 0.9vw;
+    padding-left: 50px;
   }
   
-  .amount-row {
-    font-size: 1.1vw;
+  .discount-input-field {
+    font-size: 0.9vw;
+    padding-left: 90px;
   }
   
-  .total-amount {
-    font-size: 1.5vw;
+  .total-input-box .input-wrapper::before,
+  .discount-input-wrapper::before,
+  .net-input-box .input-wrapper::before {
+    font-size: 0.85vw;
+  }
+  
+  .input-currency {
+    font-size: 0.85vw;
+  }
+  
+  .discount-currency-icon {
+    font-size: 0.85vw;
+  }
+  
+  .discount-currency-label {
+    font-size: 0.85vw;
+  }
+  
+  .net-input-box .input-field {
+    font-size: 0.95vw;
+    padding-left: 75px;
   }
   
   .checkout-btn {
-    font-size: 1.1vw;
-    padding: 5px;
+    font-size: 0.8vw;
   }
 }
 
 @media (max-width: 768px) {
   .total-amount-section {
-    width: 20vw;
-    height: 28vh;
+    width: 22vw;
+    height: 36vh;
     padding: 6px;
     right: 15px;
   }
   
   .total-title {
-    font-size: 1.6vw;
+    font-size: 1.3vw;
   }
   
   .print-btn {
-    font-size: 1.1vw;
+    font-size: 0.9vw;
   }
   
-  .date-item, .time-item {
+  .input-field {
     font-size: 1.1vw;
+    padding-left: 45px;
   }
   
-  .amount-row {
+  .discount-input-field {
+    font-size: 1.1vw;
+    padding-left: 85px;
+  }
+  
+  .total-input-box .input-wrapper::before,
+  .discount-input-wrapper::before,
+  .net-input-box .input-wrapper::before {
+    font-size: 1vw;
+  }
+  
+  .input-currency {
+    font-size: 1vw;
+  }
+  
+  .discount-currency-icon {
+    font-size: 1vw;
+  }
+  
+  .discount-currency-label {
+    font-size: 1vw;
+  }
+  
+  .net-input-box .input-field {
     font-size: 1.2vw;
-  }
-  
-  .total-amount {
-    font-size: 1.7vw;
+    padding-left: 70px;
   }
   
   .checkout-btn {
-    font-size: 1.2vw;
-    padding: 4px;
+    font-size: 0.9vw;
   }
 }
 
 @media (max-width: 576px) {
   .total-amount-section {
-    width: 80vw;
-    height: 30vh;
+    width: 85vw;
+    height: 40vh;
     padding: 10px;
     right: 10px;
     bottom: 20px;
   }
   
   .total-title {
-    font-size: 3.5vw;
-  }
-  
-  .total-title svg {
-    width: 3vw;
-    height: 3vw;
+    font-size: 3vw;
   }
   
   .print-btn {
-    font-size: 2.5vw;
-    padding: 4px 8px;
+    font-size: 2vw;
   }
   
-  .print-btn svg {
-    width: 2.5vw;
-    height: 2.5vw;
-  }
-  
-  .date-item, .time-item {
-    font-size: 2.5vw;
-    padding: 6px 8px;
-  }
-  
-  .date-item svg, .time-item svg {
-    width: 2.5vw;
-    height: 2.5vw;
-  }
-  
-  .amount-row {
+  .input-field {
     font-size: 2.8vw;
+    padding: 4px 6px 4px 50px;
   }
   
-  .discount-select {
+  .discount-input-field {
+    font-size: 2.8vw;
+    padding: 4px 22px 4px 90px;
+  }
+  
+  .total-input-box .input-wrapper::before,
+  .discount-input-wrapper::before,
+  .net-input-box .input-wrapper::before {
     font-size: 2.5vw;
-    width: 60px;
   }
   
-  .total-amount {
-    font-size: 3.5vw;
+  .input-currency {
+    font-size: 2.5vw;
+  }
+  
+  .discount-currency-icon {
+    font-size: 2.5vw;
+  }
+  
+  .discount-currency-label {
+    font-size: 2.5vw;
+  }
+  
+  .net-input-box .input-field {
+    font-size: 3vw;
+    padding-left: 85px;
   }
   
   .checkout-btn {
-    font-size: 3vw;
-    padding: 8px;
+    font-size: 2.5vw;
   }
   
   .checkout-btn svg {
-    width: 3vw;
-    height: 3vw;
+    width: 2.5vw;
+    height: 2.5vw;
   }
 }
 
@@ -545,9 +695,27 @@
     height: auto;
     margin: 20px 0;
     page-break-inside: avoid;
+    background: white !important;
+    border: 2px solid #000 !important;
   }
   
   .print-btn {
+    display: none;
+  }
+  
+  .input-field {
+    background: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    color: #000 !important;
+  }
+  
+  .discount-input-field {
+    background: #fff9e6 !important;
+    border: 1px solid #ffcc00 !important;
+    color: #000 !important;
+  }
+  
+  .checkout-btn {
     display: none;
   }
 }
