@@ -166,7 +166,7 @@ function App() {
       averagePrice: averagePrice
     });
     
-    setTotalPrice(0);
+   
   }, [dishes, categories]);
 
   // Update cart items whenever dishes change
@@ -212,32 +212,7 @@ function App() {
     if (selectedCategoryId) {
       filtered = filtered.filter(dish => dish.categoryId === selectedCategoryId);
     }
-    
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(dish => 
-        dish.name.toLowerCase().includes(query) || 
-        dish.id.toLowerCase().includes(query) ||
-        dish.sku?.toLowerCase().includes(query)
-      );
-    }
-    
-    switch (activeTab) {
-      case 'low-stock':
-        filtered = filtered.filter(dish => false);
-        break;
-      case 'out-of-stock':
-        filtered = filtered.filter(dish => false);
-        break;
-      case 'featured':
-        filtered = filtered.filter(dish => dish.featured);
-        break;
-      case 'in-cart':
-        filtered = filtered.filter(dish => dish.inCart);
-        break;
-      default:
-        break;
-    }
+   
     
     return filtered;
   };
@@ -738,7 +713,6 @@ function App() {
                 <ProductSection
                   products={getFilteredDishes()}
                   selectedCategory={categories.find(cat => cat.id === selectedCategoryId)}
-                  showForm={showProductForm}
                   selectedCategoryId={selectedCategoryId}
                   onAddProduct={handleAddDish}
                   onUpdateProduct={handleUpdateDish}
